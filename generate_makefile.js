@@ -9,12 +9,12 @@ SRCDIR:=
 SRCS := $(wildcard *.cpp) $(wildcard $(addsuffix /*.cpp, $(SRCDIR)))
 OBJECTS := $(patsubst %.c,%.o,$(SRCS))
 $(TARGET) : $(OBJECTS)
-	gcc $(CFLAGS) $^ -o $@ $(LDFLAGS)
+\tgcc $(CFLAGS) $^ -o $@ $(LDFLAGS)
 %.o : %.c
-    gcc -c $(CFLAGS) $< -o $@
-    cp ../js/${func_name}_proxy.js ../release/
+\tgcc -c $(CFLAGS) $< -o $@
+\tcp ../js/${func_name}_proxy.js ../release/
 clean:
-	@rm -f *.o $(TARGET)
+\t@rm -f *.o $(TARGET)
 .PHONY:clean`
 
 }

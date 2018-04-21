@@ -35,7 +35,7 @@ function generate_deserialization_code(rsp_params) {
                 const str_len_${index} = buffer.readInt32LE();
                 buffer = buffer.slice(4);
                 rsp.${name} = buffer.slice(0, str_len_${index});
-                buffer = bufer.slice(str_len_${index});
+                buffer = buffer.slice(str_len_${index});
                 `;
         } else {
             throw new Error(`type '${type}' not supported.`);
@@ -92,6 +92,11 @@ ${func_name}.prototype.call = function(req, cb) {
     let buffer = Buffer.alloc(4);
     buffer.writeInt32LE(sid);
     ${serialization_code}
+
+    const buffer_len = buffer.length;
+    const len_buffer = Buffer.alloc(4);
+    len_buffer.writeInt32LE(buffer_len);
+    this.child.stdin.write(len_buffer);
     this.child.stdin.write(buffer);
 }
 module.exports = ${func_name};

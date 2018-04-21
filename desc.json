@@ -1,0 +1,19 @@
+{
+    "func_name" : "test",
+    "req_params" : [
+        {
+            "name" : "param_long",
+            "type" : "long"
+        },
+        {
+            "name" : "param_string",
+            "type" : "string"
+        }
+    ],
+    "rsp_params" : [
+        {
+            "name" : "rsp_param_string",
+            "type" : "string"
+        }
+    ]
+}
