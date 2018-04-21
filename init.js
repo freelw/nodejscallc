@@ -4,6 +4,7 @@ const program = require('commander');
 
 const generate_js = require('./generate_js');
 const generate_c = require('./generate_c');
+const generate_makefile = require('./generate_makefile');
 
 async function readFile(name) {
     return new Promise((resolve, reject) => {
@@ -44,6 +45,7 @@ async function main() {
     const content = await readFile(desc);
     await mkdir('./build/js/');
     await mkdir('./build/c/');
+    await mkdir('./build/release/');
     const description = JSON.parse(content);
     const func_name = description.func_name;
     const req_params = description.req_params;
@@ -51,9 +53,11 @@ async function main() {
 
     const js_code = generate_js(func_name, req_params, rsp_params);
     const c_code = generate_c(func_name, req_params, rsp_params);
+    const makefile_code = generate_makefile(func_name);
 
     await writeFile(`./build/js/${func_name}_proxy.js`, js_code);
     await writeFile(`./build/c/${func_name}_imp.cpp`, c_code);
+    await writeFile(`./build/c/makefile`, makefile_code);
 }
 
 main();
