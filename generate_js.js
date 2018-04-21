@@ -3,23 +3,23 @@ function generate_serialization_code(req_params) {
         const {name, type} = param;
         if (type === 'long') {
             return `
-const buffer_${index} = Buffer.alloc(4);
-buffer_${index}.writeInt32LE(req.${name});
-buffer = Buffer.concat(buffer, buffer_${index});
-`;
+    const buffer_${index} = Buffer.alloc(4);
+    buffer_${index}.writeInt32LE(req.${name});
+    buffer = Buffer.concat(buffer, buffer_${index});
+    `;
         } else if (type === 'string') {
             return `
-const buffer_${index} = new Buffer(req.${name});
-const str_len_${index} = buffer_${index}.length;
-const len_buffer_${index} = Buffer.alloc(4);
-len_buffer_${index}.writeInt32LE(str_len_${index});
-buffer = Buffer.concat(buffer, len_buffer_${index});
-buffer = Buffer.concat(buffer, buffer_${index});
-`;
+    const buffer_${index} = new Buffer(req.${name});
+    const str_len_${index} = buffer_${index}.length;
+    const len_buffer_${index} = Buffer.alloc(4);
+    len_buffer_${index}.writeInt32LE(str_len_${index});
+    buffer = Buffer.concat(buffer, len_buffer_${index});
+    buffer = Buffer.concat(buffer, buffer_${index});
+    `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
-    }).join('\n');
+    }).join('');
 }
 
 function generate_deserialization_code(rsp_params) {
@@ -27,20 +27,20 @@ function generate_deserialization_code(rsp_params) {
         const {name, type} = param;
         if (type === 'long') {
             return `
-rsp.${name} = buffer.readInt32LE();
-buffer = buffer.slice(4);
-`;
+                rsp.${name} = buffer.readInt32LE();
+                buffer = buffer.slice(4);
+                `;
         } else if (type === 'string') {
             return `
-const str_len_${index} = buffer.readInt32LE();
-buffer = buffer.slice(4);
-rsp.${name} = buffer.slice(0, str_len_${index});
-buffer = bufer.slice(str_len_${index});
-`;
+                const str_len_${index} = buffer.readInt32LE();
+                buffer = buffer.slice(4);
+                rsp.${name} = buffer.slice(0, str_len_${index});
+                buffer = bufer.slice(str_len_${index});
+                `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
-    }).join('\n');
+    }).join('');
 }
 
 function generate_js(func_name, req_params, rsp_params) {

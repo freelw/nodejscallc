@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/freelw/nodejscallc#readme",
   "dependencies": {
-    "commander": "^2.15.1"
+    "commander": "^2.15.1",
+    "mkdirp": "^0.5.1"
   }
 }
