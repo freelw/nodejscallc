@@ -58,7 +58,7 @@ function generate_def_code(func_name, req_params, rsp_params)
     return `
 void ${func_name}(${req_params_str_list.concat(rsp_params_str_list).join(', ')})
 {
-
+    // TODO:
 }
 `;
 }
@@ -117,6 +117,7 @@ function generate_c(func_name, req_params, rsp_params)
 #include <iostream>
 #include <unistd.h>
 using namespace std;
+void dbg_log(const std::string & msg);
 ${def_code}
 int readed(int fd, char* read_buffer, int length)
 {
@@ -142,6 +143,17 @@ int written(int fd, char* write_buffer, int length)
         send_len += write_size;
     }
     return send_len;
+}
+
+void dbg_log(const std::string & msg)
+{
+    long type = 1;
+    long sid = 0;
+    long buffer_len = msg.length();
+    written(1, (char*)&type, 4);
+    written(1, (char*)&sid, 4);
+    written(1, (char*)&buffer_len, 4);
+    written(1, (char*)msg.c_str(), buffer_len);
 }
 
 int main()

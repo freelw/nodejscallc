@@ -74,7 +74,7 @@ function ${func_name}() {
                 this.context[sid].cb(rsp);
                 delete this.context[sid];
             } else if (type === 1) {
-                console.log(buffer);
+                console.log(buffer.toString());
             }
             this.buffer = this.buffer.slice(buffer_len+12);
         }
