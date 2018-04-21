@@ -83,6 +83,24 @@ function generate_rsp_params_def_code(rsp_params)
     }).join('\n');
 }
 
+function generate_rsp_code(rsp_params)
+{
+    return rsp_params.map((param, index) => {
+        const {name, type} = param;
+        if (type === 'long') {
+            return `rsp_buffer.append((char*)&${name}, 4);`;
+        } else if (type === 'string') {
+            return `
+                long str_len_${index} = ${name}.length();
+                rsp_buffer.append((char*)&str_len_${index}, 4);
+                rsp_buffer.append((char*)${name}.c_str(), str_len_${index});
+            `;
+        } else {
+            throw new Error(`type '${type}' not supported.`);
+        }
+    }).join('\n');
+}
+
 function generate_c(func_name, req_params, rsp_params)
 {
     const deserialization_code = generate_deserialization_code(req_params);
@@ -90,6 +108,7 @@ function generate_c(func_name, req_params, rsp_params)
     const def_code = generate_def_code(func_name, req_params, rsp_params);
     const call_code = generate_call_code(func_name, req_params, rsp_params);
     const rsp_params_def_code = generate_rsp_params_def_code(rsp_params);
+    const rsp_code = generate_rsp_code(rsp_params);
     return `
 #include <iostream>
 #include <unistd.h>
@@ -124,12 +143,12 @@ int written(int fd, char* write_buffer, int length)
 int main()
 {
     while (true) {
-        int buf_len = 0;
-        int read_size = readed(0, (char *)&buf_len, 4);
+        long buf_len = 0;
+        long read_size = readed(0, (char *)&buf_len, 4);
         if (read_size <= 0) {
             break;
         }
-        int sid = 0;
+        long sid = 0;
         read_size = readed(0, (char *)&sid, 4);
         if (read_size <= 0) {
             break;
@@ -137,6 +156,14 @@ int main()
         ${deserialization_code}
         ${rsp_params_def_code}
         ${call_code}
+        long type = 0;
+        written(1, (char*)&type, 4);
+        written(1, (char*)&sid, 4);
+        std::string rsp_buffer;
+        ${rsp_code}
+        long rsp_buffer_len = rsp_buffer.length();
+        written(1, (char*)&rsp_buffer_len, 4);
+        written(1, (char*)rsp_buffer.c_str(), rsp_buffer_len);
     }
     return 0;
 }

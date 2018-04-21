@@ -5,7 +5,7 @@ function generate_serialization_code(req_params) {
             return `
     const buffer_${index} = Buffer.alloc(4);
     buffer_${index}.writeInt32LE(req.${name});
-    buffer = Buffer.concat(buffer, buffer_${index});
+    buffer = Buffer.concat([buffer, buffer_${index}]);
     `;
         } else if (type === 'string') {
             return `
@@ -13,8 +13,8 @@ function generate_serialization_code(req_params) {
     const str_len_${index} = buffer_${index}.length;
     const len_buffer_${index} = Buffer.alloc(4);
     len_buffer_${index}.writeInt32LE(str_len_${index});
-    buffer = Buffer.concat(buffer, len_buffer_${index});
-    buffer = Buffer.concat(buffer, buffer_${index});
+    buffer = Buffer.concat([buffer, len_buffer_${index}]);
+    buffer = Buffer.concat([buffer, buffer_${index}]);
     `;
         } else {
             throw new Error(`type '${type}' not supported.`);
@@ -34,7 +34,7 @@ function generate_deserialization_code(rsp_params) {
             return `
                 const str_len_${index} = buffer.readInt32LE();
                 buffer = buffer.slice(4);
-                rsp.${name} = buffer.slice(0, str_len_${index});
+                rsp.${name} = buffer.slice(0, str_len_${index}).toString();
                 buffer = buffer.slice(str_len_${index});
                 `;
         } else {
@@ -62,8 +62,8 @@ function ${func_name}() {
                 break;
             }
             const type = this.buffer.readInt32LE(); 
-            const sid = this.buffer.readInt32LE();
-            const buffer_len = this.buffer.readInt32LE();
+            const sid = this.buffer.readInt32LE(4);
+            const buffer_len = this.buffer.readInt32LE(8);
             if (this.buffer.length-12 < buffer_len) {
                 break;
             }
@@ -82,7 +82,7 @@ function ${func_name}() {
     this.child.on('close', () => {
     });
 }
-${func_name}.prototype.call = function(req, cb) {
+${func_name}.prototype.do = function(req, cb) {
     const sid = this.sid++;
     this.sid %= 2147483647;
     this.context[sid] = {
