@@ -74,9 +74,13 @@ function generate_rsp_params_def_code(rsp_params)
     return rsp_params.map((param) => {
         const {name, type} = param;
         if (type === 'long') {
-            return `long & ${name};`;
+            return `
+            long ${name};
+            `;
         } else if (type === 'string') {
-            return `std::string ${name};`;
+            return `
+            std::string ${name};
+            `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
