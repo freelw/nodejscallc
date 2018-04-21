@@ -1,0 +1,22 @@
+{
+  "name": "nodejscallc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "init.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freelw/nodejscallc.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/freelw/nodejscallc/issues"
+  },
+  "homepage": "https://github.com/freelw/nodejscallc#readme",
+  "dependencies": {
+    "commander": "^2.15.1"
+  }
+}
