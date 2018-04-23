@@ -75,11 +75,11 @@ function generate_rsp_params_def_code(rsp_params)
         const {name, type} = param;
         if (type === 'long') {
             return `
-            long ${name};
+        long ${name};
             `;
         } else if (type === 'string') {
             return `
-            std::string ${name};
+        std::string ${name};
             `;
         } else {
             throw new Error(`type '${type}' not supported.`);
@@ -92,12 +92,14 @@ function generate_rsp_code(rsp_params)
     return rsp_params.map((param, index) => {
         const {name, type} = param;
         if (type === 'long') {
-            return `rsp_buffer.append((char*)&${name}, 4);`;
+            return `
+        rsp_buffer.append((char*)&${name}, 4);
+            `;
         } else if (type === 'string') {
             return `
-                long str_len_${index} = ${name}.length();
-                rsp_buffer.append((char*)&str_len_${index}, 4);
-                rsp_buffer.append((char*)${name}.c_str(), str_len_${index});
+        long str_len_${index} = ${name}.length();
+        rsp_buffer.append((char*)&str_len_${index}, 4);
+        rsp_buffer.append((char*)${name}.c_str(), str_len_${index});
             `;
         } else {
             throw new Error(`type '${type}' not supported.`);
