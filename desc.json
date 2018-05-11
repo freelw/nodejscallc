@@ -8,6 +8,10 @@
         {
             "name" : "param_string",
             "type" : "string"
+        },
+        {
+            "name" : "param_vector_string",
+            "type" : "vector_string"
         }
     ],
     "rsp_params" : [

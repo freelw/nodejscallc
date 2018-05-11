@@ -9,12 +9,27 @@ function generate_serialization_code(req_params) {
     `;
         } else if (type === 'string') {
             return `
-    const buffer_${index} = new Buffer(req.${name});
-    const str_len_${index} = buffer_${index}.length;
+    const buffer_${index} = Buffer.alloc(Buffer.byteLength(req.${name}));
+    buffer_${index}.write(req.${name});
+    const str_len_${index} = Buffer.byteLength(buffer_${index});
     const len_buffer_${index} = Buffer.alloc(4);
     len_buffer_${index}.writeInt32LE(str_len_${index});
-    buffer = Buffer.concat([buffer, len_buffer_${index}]);
-    buffer = Buffer.concat([buffer, buffer_${index}]);
+    buffer = Buffer.concat([buffer, len_buffer_${index}, buffer_${index}]);
+    `;
+        } else if (type === 'vector_string'){
+            return `
+    const vbuffer_${index} = Buffer.concat(req.${name}.map((str) => {
+        const _len_buffer = Buffer.alloc(4);
+        _len_buffer.writeInt32LE(Buffer.byteLength(str));
+        const _buffer = Buffer.alloc(Buffer.byteLength(str));
+        _buffer.write(str);
+        return Buffer.concat([_len_buffer,_buffer]);
+    }));
+    const len_buffer_cnt_${index} = Buffer.alloc(4);
+    len_buffer_cnt_${index}.writeInt32LE(req.${name}.length);
+    const len_buffer_${index} = Buffer.alloc(4);
+    len_buffer_${index}.writeInt32LE(vbuffer_${index}.byteLength);
+    buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, len_buffer_${index}, vbuffer_${index}]);
     `;
         } else {
             throw new Error(`type '${type}' not supported.`);

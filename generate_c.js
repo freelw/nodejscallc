@@ -22,6 +22,35 @@ function generate_deserialization_code(req_params) {
         }
         std::string ${name}(buffer_${index}, len_${index});
         delete []buffer_${index};`;
+        } else if (type === 'vector_string') {
+            return `
+        long vector_cnt_${index} = 0;
+        read_size = readed(0, (char *)&vector_cnt_${index}, 4);
+        if (read_size <= 0) {
+            break;
+        }
+        long vector_len_${index} = 0;
+        read_size = readed(0, (char *)&vector_len_${index}, 4);
+        if (read_size <= 0) {
+            break;
+        }
+        std::vector<std::string> ${name};
+        ${name}.reserve(vector_len_${index});
+        char *buffer_${index} = new char[vector_len_${index}];
+        read_size = readed(0, buffer_${index}, vector_len_${index});
+        if (read_size <= 0) {
+            break;
+        }
+        long *_v_len_${index} = (long *)buffer_${index};
+        char *_buffer_${index} = (char *)buffer_${index} + 4;
+        for (long i = 0; i < vector_cnt_${index}; ++ i) {
+            long tmp_len = 0;
+            memcpy(&tmp_len, _v_len_${index}, 4);
+            ${name}.push_back(std::string(_buffer_${index}, tmp_len));
+            _buffer_${index} += tmp_len + 4 ;
+            _v_len_${index} = (long *)(_buffer_${index} - 4);
+        }
+        delete []buffer_${index};`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -41,6 +70,8 @@ function generate_def_code(func_name, req_params, rsp_params)
             return `long ${name}`;
         } else if (type === 'string') {
             return `const std::string & ${name}`;
+        } else if (type === 'vector_string') {
+            return `const std::vector<std::string> & ${name}`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -115,7 +146,9 @@ function generate_c(func_name, req_params, rsp_params)
     const call_code = generate_call_code(func_name, req_params, rsp_params);
     const rsp_params_def_code = generate_rsp_params_def_code(rsp_params);
     const rsp_code = generate_rsp_code(rsp_params);
-    return `
+    return `#include <string>
+#include <vector>
+#include <sstream>
 #include <iostream>
 #include <unistd.h>
 using namespace std;
