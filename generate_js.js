@@ -84,6 +84,7 @@ function ${func_name}() {
     this.buffer = Buffer.alloc(0);
     this.sid = 0;
     this.context = {};
+    this.is_ready = false;
     this.child.stdout.on('data', (data) => {
         this.buffer = Buffer.concat([this.buffer, data]);
         while (0 < this.buffer.length) {
@@ -104,6 +105,9 @@ function ${func_name}() {
                 delete this.context[sid];
             } else if (type === 1) {
                 console.log(buffer.toString());
+            } else if (type === 2) {
+                this.is_ready = true;
+                this.ready && this.ready();
             }
             this.buffer = this.buffer.slice(buffer_len+12);
         }
@@ -111,6 +115,7 @@ function ${func_name}() {
     this.child.on('close', () => {
     });
 }
+
 ${func_name}.prototype.do = function(req, cb) {
     const sid = this.sid++;
     this.sid %= 2147483647;
@@ -127,6 +132,14 @@ ${func_name}.prototype.do = function(req, cb) {
     len_buffer.writeInt32LE(buffer_len);
     this.child.stdin.write(len_buffer);
     this.child.stdin.write(buffer);
+}
+
+${func_name}.prototype.ready = function(cb) {
+    if (this.is_ready) {
+        cb();
+    } else {
+        this.ready = cb;
+    }
 }
 module.exports = ${func_name};
     `;

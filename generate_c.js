@@ -168,6 +168,10 @@ function generate_c(func_name, req_params, rsp_params)
 #include <unistd.h>
 using namespace std;
 void dbg_log(const std::string & msg);
+void initialize()
+{
+    // TODO initialize
+}
 ${def_code}
 int readed(int fd, char* read_buffer, int length)
 {
@@ -206,8 +210,21 @@ void dbg_log(const std::string & msg)
     written(1, (char*)msg.c_str(), buffer_len);
 }
 
+void ready()
+{
+    long type = 2;
+    long sid = 0;
+    long buffer_len = 1;
+    written(1, (char*)&type, 4);
+    written(1, (char*)&sid, 4);
+    written(1, (char*)&buffer_len, 4);
+    written(1, (char*)" ", buffer_len);
+}
+
 int main()
 {
+    initialize();
+    ready();
     while (true) {
         long buf_len = 0;
         long read_size = readed(0, (char *)&buf_len, 4);
