@@ -52,6 +52,20 @@ function generate_deserialization_code(rsp_params) {
                 rsp.${name} = buffer.slice(0, str_len_${index}).toString();
                 buffer = buffer.slice(str_len_${index});
                 `;
+        } else if (type === 'vector_string') {
+            return `
+                const v_cnt_${index} = buffer.readInt32LE();
+                buffer = buffer.slice(4);
+                const buffer_len_${index} = buffer.readInt32LE();
+                buffer = buffer.slice(4);
+                rsp.${name} = [];
+                for (let i = 0; i < v_cnt_${index}; ++ i) {
+                    const tmp_len = buffer.readInt32LE();
+                    buffer = buffer.slice(4);
+                    rsp.${name}.push(buffer.slice(0, tmp_len).toString());
+                    buffer = buffer.slice(tmp_len);
+                }
+            `
         } else {
             throw new Error(`type '${type}' not supported.`);
         }

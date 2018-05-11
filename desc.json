@@ -22,6 +22,10 @@
         {
             "name" : "rsp_param_long",
             "type" : "long"
+        },
+        {
+            "name" : "rsp_param_vector_string",
+            "type" : "vector_string"
         }
     ]
 }

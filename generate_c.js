@@ -57,11 +57,6 @@ function generate_deserialization_code(req_params) {
     }).join('');
 }
 
-function generate_serialization_code(rsp_params)
-{
-    return '';
-}
-
 function generate_def_code(func_name, req_params, rsp_params)
 {
     const req_params_str_list = req_params.map((param) => {
@@ -82,6 +77,8 @@ function generate_def_code(func_name, req_params, rsp_params)
             return `long & ${name}`;
         } else if (type === 'string') {
             return `std::string & ${name}`;
+        } else if (type === 'vector_string') {
+            return `std::vector<std::string> & ${name}`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -112,6 +109,10 @@ function generate_rsp_params_def_code(rsp_params)
             return `
         std::string ${name};
             `;
+        } else if (type === 'vector_string') {
+            return `
+        std::vector<std::string> ${name};
+            `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -132,6 +133,21 @@ function generate_rsp_code(rsp_params)
         rsp_buffer.append((char*)&str_len_${index}, 4);
         rsp_buffer.append((char*)${name}.c_str(), str_len_${index});
             `;
+        } else if (type === 'vector_string') {
+            return `
+        long v_cnt_${index} = ${name}.size();
+        rsp_buffer.append((char*)&v_cnt_${index}, 4);
+        long total_len_${index} = ${name}.size() * 4;
+        for (size_t i = 0, len = ${name}.size(); i < len; ++ i) {
+            total_len_${index} += ${name}[i].length();
+        }
+        rsp_buffer.append((char*)&total_len_${index}, 4);
+        for (size_t i = 0, len = ${name}.size(); i < len; ++ i) {
+            long tmp_len = (long)${name}[i].length();
+            rsp_buffer.append((char *)&tmp_len, 4);
+            rsp_buffer.append(${name}[i].c_str(), ${name}[i].length());
+        }
+        `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -141,7 +157,6 @@ function generate_rsp_code(rsp_params)
 function generate_c(func_name, req_params, rsp_params)
 {
     const deserialization_code = generate_deserialization_code(req_params);
-    const serialization_code = generate_serialization_code(rsp_params);
     const def_code = generate_def_code(func_name, req_params, rsp_params);
     const call_code = generate_call_code(func_name, req_params, rsp_params);
     const rsp_params_def_code = generate_rsp_params_def_code(rsp_params);
