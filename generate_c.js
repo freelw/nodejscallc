@@ -166,6 +166,7 @@ function generate_c(func_name, req_params, rsp_params)
 #include <sstream>
 #include <iostream>
 #include <unistd.h>
+#include <string.h>
 using namespace std;
 void dbg_log(const std::string & msg);
 void initialize()
