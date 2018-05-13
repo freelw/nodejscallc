@@ -5,19 +5,19 @@ function generate_deserialization_code(params) {
             return `
         long ${name} = 0;
         read_size = readed(0, (char *)&${name}, 4);
-        if (read_size <= 0) {
+        if (read_size < 0) {
             break;
         }`;
         } else if (type === 'string') {
             return `
         long len_${index} = 0;
         read_size = readed(0, (char *)&len_${index}, 4);
-        if (read_size <= 0) {
+        if (read_size < 0) {
             break;
         }
         char *buffer_${index} = new char[len_${index}];
         read_size = readed(0, buffer_${index}, len_${index});
-        if (read_size <= 0) {
+        if (read_size < 0) {
             break;
         }
         std::string ${name}(buffer_${index}, len_${index});
@@ -26,19 +26,19 @@ function generate_deserialization_code(params) {
             return `
         long vector_cnt_${index} = 0;
         read_size = readed(0, (char *)&vector_cnt_${index}, 4);
-        if (read_size <= 0) {
+        if (read_size < 0) {
             break;
         }
         long vector_len_${index} = 0;
         read_size = readed(0, (char *)&vector_len_${index}, 4);
-        if (read_size <= 0) {
+        if (read_size < 0) {
             break;
         }
         std::vector<std::string> ${name};
         ${name}.reserve(vector_len_${index});
         char *buffer_${index} = new char[vector_len_${index}];
         read_size = readed(0, buffer_${index}, vector_len_${index});
-        if (read_size <= 0) {
+        if (read_size < 0) {
             break;
         }
         long *_v_len_${index} = (long *)buffer_${index};
