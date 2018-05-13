@@ -35,9 +35,11 @@ async function mkdir(dir) {
     });
 }
 
+const version = '0.0.2';
+
 async function main() {
     program
-        .version('0.0.1')
+        .version(version)
         .option('-i, --input [value]', 'select a description file (json)')
         .parse(process.argv);
     const desc = program.input || 'desc.json';
@@ -51,8 +53,8 @@ async function main() {
     const req_params = description.req_params;
     const rsp_params = description.rsp_params;
 
-    const js_code = generate_js(func_name, req_params, rsp_params);
-    const c_code = generate_c(func_name, req_params, rsp_params);
+    const js_code = generate_js(func_name, req_params, rsp_params, desc, version);
+    const c_code = generate_c(func_name, req_params, rsp_params, desc, version);
     const makefile_code = generate_makefile(func_name);
 
     await writeFile(`./build/js/${func_name}_proxy.js`, js_code);
