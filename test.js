@@ -1,8 +1,13 @@
 const Test = require('./build/release/test_proxy');
 const test = new Test(
-    567,
-    "initialize string",
-    ["v_init_string0", "v_init_string1"]
+    {
+        init_param_long: 567,
+        init_param_string: "initialize string",
+        init_param_vector_string: ["v_init_string0", "v_init_string1"],
+    },
+    {
+        test_env_var: 'ok',
+    },
 );
 console.log('start');
 test.ready(() => {
