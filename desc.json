@@ -1,5 +1,19 @@
 {
     "func_name" : "test",
+    "init_params" : [
+        {
+            "name" : "init_param_long",
+            "type" : "long"
+        },
+        {
+            "name" : "init_param_string",
+            "type" : "string"
+        },
+        {
+            "name" : "init_param_vector_string",
+            "type" : "vector_string"
+        }
+    ],
     "req_params" : [
         {
             "name" : "param_long",

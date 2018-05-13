@@ -1,4 +1,9 @@
-const test = new (require('./build/release/test_proxy'))();
+const Test = require('./build/release/test_proxy');
+const test = new Test(
+    567,
+    "initialize string",
+    ["v_init_string0", "v_init_string1"]
+);
 console.log('start');
 test.ready(() => {
     console.log('ready');

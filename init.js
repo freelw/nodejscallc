@@ -35,7 +35,7 @@ async function mkdir(dir) {
     });
 }
 
-const version = '0.0.2';
+const version = '0.0.3';
 
 async function main() {
     program
@@ -49,12 +49,15 @@ async function main() {
     await mkdir('./build/c/');
     await mkdir('./build/release/');
     const description = JSON.parse(content);
-    const func_name = description.func_name;
-    const req_params = description.req_params;
-    const rsp_params = description.rsp_params;
+    const {
+        func_name,
+        req_params,
+        rsp_params,
+        init_params,
+    } = description;
 
-    const js_code = generate_js(func_name, req_params, rsp_params, desc, version);
-    const c_code = generate_c(func_name, req_params, rsp_params, desc, version);
+    const js_code = generate_js(func_name, req_params, rsp_params, init_params, desc, version);
+    const c_code = generate_c(func_name, req_params, rsp_params, init_params, desc, version);
     const makefile_code = generate_makefile(func_name);
 
     await writeFile(`./build/js/${func_name}_proxy.js`, js_code);
