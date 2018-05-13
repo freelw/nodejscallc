@@ -35,7 +35,7 @@ async function mkdir(dir) {
     });
 }
 
-const version = '0.0.3';
+const version = '0.0.5';
 
 async function main() {
     program

@@ -183,6 +183,7 @@ function generate_c(func_name, req_params, rsp_params, init_params, desc, versio
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 using namespace std;
