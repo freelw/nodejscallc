@@ -12,6 +12,10 @@
         {
             "name" : "init_param_vector_string",
             "type" : "vector_string"
+        },
+        {
+            "name" : "init_param_vector_long",
+            "type" : "vector_long"
         }
     ],
     "req_params" : [
@@ -26,6 +30,10 @@
         {
             "name" : "param_vector_string",
             "type" : "vector_string"
+        },
+        {
+            "name" : "param_vector_long",
+            "type" : "vector_long"
         }
     ],
     "rsp_params" : [
@@ -40,6 +48,10 @@
         {
             "name" : "rsp_param_vector_string",
             "type" : "vector_string"
+        },
+        {
+            "name" : "rsp_param_vector_long",
+            "type" : "vector_long"
         }
     ]
 }

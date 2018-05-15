@@ -35,20 +35,36 @@ function generate_deserialization_code(params) {
             break;
         }
         std::vector<std::string> ${name};
-        ${name}.reserve(vector_len_${index});
+        ${name}.reserve(vector_cnt_${index});
         char *buffer_${index} = new char[vector_len_${index}];
         read_size = readed(0, buffer_${index}, vector_len_${index});
         if (read_size < 0) {
             break;
         }
-        long *_v_len_${index} = (long *)buffer_${index};
+        int *_v_len_${index} = (int *)buffer_${index};
         char *_buffer_${index} = (char *)buffer_${index} + 4;
         for (long i = 0; i < vector_cnt_${index}; ++ i) {
-            long tmp_len = 0;
-            memcpy(&tmp_len, _v_len_${index}, 4);
-            ${name}.push_back(std::string(_buffer_${index}, tmp_len));
-            _buffer_${index} += tmp_len + 4 ;
-            _v_len_${index} = (long *)(_buffer_${index} - 4);
+            ${name}.push_back(std::string(_buffer_${index}, *_v_len_${index}));
+            _buffer_${index} += *_v_len_${index} + 4 ;
+            _v_len_${index} = (int *)(_buffer_${index} - 4);
+        }
+        delete []buffer_${index};`;
+        } else if (type === 'vector_long') {
+            return `
+        long vector_cnt_${index} = 0;
+        read_size = readed(0, (char *)&vector_cnt_${index}, 4);
+        if (read_size < 0) {
+            break;
+        }
+        std::vector<int> ${name};
+        ${name}.reserve(vector_cnt_${index});
+        int *buffer_${index} = new int[vector_cnt_${index}];
+        read_size = readed(0, (char *)buffer_${index}, vector_cnt_${index}*4);
+        if (read_size < 0) {
+            break;
+        }
+        for (long i = 0; i < vector_cnt_${index}; ++ i) {
+            ${name}.push_back(buffer_${index}[i]);
         }
         delete []buffer_${index};`;
         } else {
@@ -66,6 +82,8 @@ function generate_params_str_list(req_params, rsp_params) {
             return `const std::string & ${name}`;
         } else if (type === 'vector_string') {
             return `const std::vector<std::string> & ${name}`;
+        } else if (type === 'vector_long') {
+            return `const std::vector<int> & ${name}`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -78,6 +96,8 @@ function generate_params_str_list(req_params, rsp_params) {
             return `std::string & ${name}`;
         } else if (type === 'vector_string') {
             return `std::vector<std::string> & ${name}`;
+        } else if (type === 'vector_long') {
+            return `std::vector<int> & ${name}`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -118,6 +138,10 @@ function generate_rsp_params_def_code(rsp_params)
             return `
         std::vector<std::string> ${name};
             `;
+        } else if (type === 'vector_long') {
+            return `
+        std::vector<int> ${name};
+            `
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -153,6 +177,14 @@ function generate_rsp_code(rsp_params)
             rsp_buffer.append(${name}[i].c_str(), ${name}[i].length());
         }
         `;
+        } else if (type === 'vector_long') {
+            return `
+        long v_cnt_${index} = ${name}.size();
+        rsp_buffer.append((char*)&v_cnt_${index}, 4);
+        for (size_t i = 0, len = ${name}.size(); i < len; ++ i) {
+            rsp_buffer.append((char *)&${name}[i], 4);
+        }
+            `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }

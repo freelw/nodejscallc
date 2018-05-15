@@ -31,6 +31,17 @@ function generate_serialization_code(params) {
     len_buffer_${index}.writeInt32LE(vbuffer_${index}.byteLength);
     buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, len_buffer_${index}, vbuffer_${index}]);
     `;
+        } else if (type === 'vector_long'){
+            return `
+    const vbuffer_${index} = Buffer.concat(req.${name}.map((num) => {
+        const _num_buffer = Buffer.alloc(4);
+        _num_buffer.writeInt32LE(num);
+        return _num_buffer;
+    }));
+    const len_buffer_cnt_${index} = Buffer.alloc(4);
+    len_buffer_cnt_${index}.writeInt32LE(req.${name}.length);
+    buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, vbuffer_${index}]);
+        `
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -65,7 +76,18 @@ function generate_deserialization_code(rsp_params) {
                     rsp.${name}.push(buffer.slice(0, tmp_len).toString());
                     buffer = buffer.slice(tmp_len);
                 }
-            `
+            `;
+        } else if (type === 'vector_long') {
+            return `
+                const v_cnt_${index} = buffer.readInt32LE();
+                buffer = buffer.slice(4);
+                rsp.${name} = [];
+                for (let i = 0; i < v_cnt_${index}; ++ i) {
+                    const num = buffer.readInt32LE();
+                    buffer = buffer.slice(4);
+                    rsp.${name}.push(num);
+                }
+            `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
