@@ -141,6 +141,8 @@ function ${func_name}(init_req, init_env) {
         }
     });
     this.child.on('close', () => {
+        console.log('child closed.');
+        process.exit();
     });
     this.initialize(init_req);
 }
