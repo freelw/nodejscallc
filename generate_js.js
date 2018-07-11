@@ -144,6 +144,9 @@ function ${func_name}(init_req, init_env) {
         console.log('child closed.');
         process.exit();
     });
+    this.child.stderr.on('data', (data) => {
+        console.error('child error : ', data);
+    });
     this.initialize(init_req);
 }
 
