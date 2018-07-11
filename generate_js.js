@@ -145,7 +145,7 @@ function ${func_name}(init_req, init_env) {
         process.exit();
     });
     this.child.stderr.on('data', (data) => {
-        console.error('child error : ', data);
+        console.error('child error : ', data.toString());
     });
     this.initialize(init_req);
 }
