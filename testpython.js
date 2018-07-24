@@ -1,4 +1,4 @@
-const Test = require('./build/releasejscallc/test_proxy');
+const Test = require('./build/releasejscallpython/test_proxy');
 const test = new Test(
     {
         init_param_long: 567,
