@@ -4,19 +4,19 @@ function generate_deserialization_code(params) {
         if (type === 'long') {
             return `
         long ${name} = 0;
-        read_size = readed(0, (char *)&${name}, 4);
+        read_size = readed(fd0, (char *)&${name}, 4);
         if (read_size < 0) {
             break;
         }`;
         } else if (type === 'string') {
             return `
         long len_${index} = 0;
-        read_size = readed(0, (char *)&len_${index}, 4);
+        read_size = readed(fd0, (char *)&len_${index}, 4);
         if (read_size < 0) {
             break;
         }
         char *buffer_${index} = new char[len_${index}];
-        read_size = readed(0, buffer_${index}, len_${index});
+        read_size = readed(fd0, buffer_${index}, len_${index});
         if (read_size < 0) {
             break;
         }
@@ -25,19 +25,19 @@ function generate_deserialization_code(params) {
         } else if (type === 'vector_string') {
             return `
         long vector_cnt_${index} = 0;
-        read_size = readed(0, (char *)&vector_cnt_${index}, 4);
+        read_size = readed(fd0, (char *)&vector_cnt_${index}, 4);
         if (read_size < 0) {
             break;
         }
         long vector_len_${index} = 0;
-        read_size = readed(0, (char *)&vector_len_${index}, 4);
+        read_size = readed(fd0, (char *)&vector_len_${index}, 4);
         if (read_size < 0) {
             break;
         }
         std::vector<std::string> ${name};
         ${name}.reserve(vector_cnt_${index});
         char *buffer_${index} = new char[vector_len_${index}];
-        read_size = readed(0, buffer_${index}, vector_len_${index});
+        read_size = readed(fd0, buffer_${index}, vector_len_${index});
         if (read_size < 0) {
             break;
         }
@@ -52,14 +52,14 @@ function generate_deserialization_code(params) {
         } else if (type === 'vector_long') {
             return `
         long vector_cnt_${index} = 0;
-        read_size = readed(0, (char *)&vector_cnt_${index}, 4);
+        read_size = readed(fd0, (char *)&vector_cnt_${index}, 4);
         if (read_size < 0) {
             break;
         }
         std::vector<int> ${name};
         ${name}.reserve(vector_cnt_${index});
         int *buffer_${index} = new int[vector_cnt_${index}];
-        read_size = readed(0, (char *)buffer_${index}, vector_cnt_${index}*4);
+        read_size = readed(fd0, (char *)buffer_${index}, vector_cnt_${index}*4);
         if (read_size < 0) {
             break;
         }
@@ -219,6 +219,10 @@ function generate_c(func_name, req_params, rsp_params, init_params, desc, versio
 #include <unistd.h>
 #include <string.h>
 using namespace std;
+
+int fd0 = 0;
+int fd1 = 0;
+
 void dbg_log(const std::string & msg);
 void initialize(${initialization_args})
 {
@@ -256,10 +260,10 @@ void dbg_log(const std::string & msg)
     long type = 1;
     long sid = 0;
     long buffer_len = msg.length();
-    written(1, (char*)&type, 4);
-    written(1, (char*)&sid, 4);
-    written(1, (char*)&buffer_len, 4);
-    written(1, (char*)msg.c_str(), buffer_len);
+    written(fd1, (char*)&type, 4);
+    written(fd1, (char*)&sid, 4);
+    written(fd1, (char*)&buffer_len, 4);
+    written(fd1, (char*)msg.c_str(), buffer_len);
 }
 
 void ready()
@@ -267,19 +271,23 @@ void ready()
     long type = 2;
     long sid = 0;
     long buffer_len = 1;
-    written(1, (char*)&type, 4);
-    written(1, (char*)&sid, 4);
-    written(1, (char*)&buffer_len, 4);
-    written(1, (char*)" ", buffer_len);
+    written(fd1, (char*)&type, 4);
+    written(fd1, (char*)&sid, 4);
+    written(fd1, (char*)&buffer_len, 4);
+    written(fd1, (char*)" ", buffer_len);
 }
 
 int main()
 {   
+    fd0 = dup(0);
+    fd1 = dup(1);
+    close(0);
+    close(1);
     bool initialized = false;
     while (true)
     {
         long buf_len = 0;
-        long read_size = readed(0, (char *)&buf_len, 4);
+        long read_size = readed(fd0, (char *)&buf_len, 4);
         if (read_size <= 0) {
             break;
         }
@@ -297,12 +305,12 @@ int main()
     
     while (true) {
         long buf_len = 0;
-        long read_size = readed(0, (char *)&buf_len, 4);
+        long read_size = readed(fd0, (char *)&buf_len, 4);
         if (read_size <= 0) {
             break;
         }
         long sid = 0;
-        read_size = readed(0, (char *)&sid, 4);
+        read_size = readed(fd0, (char *)&sid, 4);
         if (read_size <= 0) {
             break;
         }
@@ -310,13 +318,13 @@ int main()
         ${rsp_params_def_code}
         ${call_code}
         long type = 0;
-        written(1, (char*)&type, 4);
-        written(1, (char*)&sid, 4);
+        written(fd1, (char*)&type, 4);
+        written(fd1, (char*)&sid, 4);
         std::string rsp_buffer;
         ${rsp_code}
         long rsp_buffer_len = rsp_buffer.length();
-        written(1, (char*)&rsp_buffer_len, 4);
-        written(1, (char*)rsp_buffer.c_str(), rsp_buffer_len);
+        written(fd1, (char*)&rsp_buffer_len, 4);
+        written(fd1, (char*)rsp_buffer.c_str(), rsp_buffer_len);
     }
     return 0;
 }
