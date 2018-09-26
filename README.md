@@ -1,7 +1,7 @@
 # nodejscallc
 
 这是一个用于快速生成管道通讯序列化反序列化脚手架的工程
-目前支持node调用c node调用python的模版代码生成
+目前支持node调用c/c++ node调用python的模版代码生成
 
 参数传递支持四种类型
 1. long 32位整形
