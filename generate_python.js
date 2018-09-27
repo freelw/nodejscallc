@@ -152,6 +152,7 @@ function generate_python(func_name, req_params, rsp_params, init_params, desc, v
 # Generated from ${desc} at ${(new Date()).toString()}
 # **********************************************************************
 
+import os
 import sys
 import struct
 
@@ -162,13 +163,13 @@ ${def_code}
 def readed(length):
     ret_buffer = ''
     while len(ret_buffer) < length:
-        buffer = sys.stdin.read(length - len(ret_buffer))
+        buffer = fd0.read(length - len(ret_buffer))
         ret_buffer += buffer
     return ret_buffer
 
 def written(buffer):
-    sys.stdout.write(buffer)
-    sys.stdout.flush()
+    fd1.write(buffer)
+    fd1.flush()
 
 def dbg_log(msg):
     _type = 1
@@ -189,6 +190,12 @@ def ready():
     written(' ')
 
 if __name__ == '__main__':
+    global fd0
+    global fd1
+    fd0 = os.fdopen(os.dup(sys.stdin.fileno()), "rb")
+    fd1 = os.fdopen(os.dup(sys.stdout.fileno()), "wb")
+    os.close(sys.stdin.fileno())
+    os.close(sys.stdout.fileno())
     initialized = False
     while True:
         (buf_len,) = struct.unpack('i', readed(4))
