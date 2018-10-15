@@ -122,6 +122,10 @@ function ${func_name}(init_req, init_env) {
     this.sid = 0;
     this.context = {};
     this.is_ready = false;
+    this.on_ready = () => {};
+    this.child_close = () => {
+        process.exit();
+    }
     this.child.stdout.on('data', (data) => {
         this.buffer = Buffer.concat([this.buffer, data]);
         while (0 < this.buffer.length) {
@@ -144,14 +148,14 @@ function ${func_name}(init_req, init_env) {
                 console.log(buffer.toString());
             } else if (type === 2) {
                 this.is_ready = true;
-                this.ready && this.ready();
+                this.on_ready && this.on_ready();
             }
             this.buffer = this.buffer.slice(buffer_len+12);
         }
     });
     this.child.on('close', () => {
         console.log('child closed.');
-        process.exit();
+        this.child_close();
     });
     this.child.stderr.on('data', (data) => {
         console.error('child error : ', data.toString());
@@ -180,7 +184,13 @@ ${func_name}.prototype.ready = function(cb) {
     if (this.is_ready) {
         cb();
     } else {
-        this.ready = cb;
+        this.on_ready = cb;
+    }
+}
+
+${func_name}.prototype.on_child_close = function(cb) {
+    if (cb) {
+        this.child_close = cb;
     }
 }
 
