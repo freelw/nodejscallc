@@ -166,6 +166,8 @@ def readed(length):
     ret_buffer = ''
     while len(ret_buffer) < length:
         buffer = fd0.read(length - len(ret_buffer))
+        if len(buffer) == 0:
+            sys.exit(-1)
         ret_buffer += buffer
     return ret_buffer
 
