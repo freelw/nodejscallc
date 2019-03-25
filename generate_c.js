@@ -243,6 +243,7 @@ ${generate_def_code_without_body(func_name, req_params, rsp_params)};
 #endif
 `;
     const c_pipe_code = `${comment}
+#include "${func_name}_header.h"
 #include <string>
 #include <vector>
 #include <sstream>
