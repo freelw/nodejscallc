@@ -7,7 +7,7 @@ function generate_deserialization_code(params) {
             return `
         (${name},) = struct.unpack('i', readed(4))
         `;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `
         (len_${index},) = struct.unpack('i', readed(4))
         ${name} = readed(len_${index})

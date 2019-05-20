@@ -10,7 +10,7 @@ function generate_deserialization_code(params) {
         if (read_size < 0) {
             break;
         }`;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `
         long len_${index} = 0;
         read_size = readed(fd0, (char *)&len_${index}, 4);
@@ -80,7 +80,7 @@ function generate_params_str_list(req_params, rsp_params) {
         const {name, type} = param;
         if (type === 'long') {
             return `long ${name}`;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `const std::string & ${name}`;
         } else if (type === 'vector_string') {
             return `const std::vector<std::string> & ${name}`;

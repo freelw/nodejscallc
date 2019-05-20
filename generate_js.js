@@ -9,6 +9,14 @@ function generate_serialization_code(params) {
     buffer_${index}.writeInt32LE(req.${name});
     buffer = Buffer.concat([buffer, buffer_${index}]);
     `;
+        } else if (type === 'buffer') {
+            return `
+    const buffer_${index} = req.${name};
+    const buf_len_${index} = req.${name}.byteLength;
+    const len_buffer_${index} = Buffer.alloc(4);
+    len_buffer_${index}.writeInt32LE(buf_len_${index});
+    buffer = Buffer.concat([buffer, len_buffer_${index}, buffer_${index}]);
+    `;
         } else if (type === 'string') {
             return `
     const buffer_${index} = Buffer.alloc(Buffer.byteLength(req.${name}));
