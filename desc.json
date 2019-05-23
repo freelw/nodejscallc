@@ -6,6 +6,10 @@
             "type" : "long"
         },
         {
+            "name" : "init_param_float",
+            "type" : "float"
+        },
+        {
             "name" : "init_param_string",
             "type" : "string"
         },
@@ -16,12 +20,20 @@
         {
             "name" : "init_param_vector_long",
             "type" : "vector_long"
+        },
+        {
+            "name" : "init_param_vector_float",
+            "type" : "vector_float"
         }
     ],
     "req_params" : [
         {
             "name" : "param_long",
             "type" : "long"
+        },
+        {
+            "name" : "param_float",
+            "type" : "float"
         },
         {
             "name" : "param_string",
@@ -34,6 +46,10 @@
         {
             "name" : "param_vector_long",
             "type" : "vector_long"
+        },
+        {
+            "name" : "param_vector_float",
+            "type" : "vector_float"
         }
     ],
     "rsp_params" : [
@@ -46,12 +62,20 @@
             "type" : "long"
         },
         {
+            "name" : "rsp_param_float",
+            "type" : "float"
+        },
+        {
             "name" : "rsp_param_vector_string",
             "type" : "vector_string"
         },
         {
             "name" : "rsp_param_vector_long",
             "type" : "vector_long"
+        },
+        {
+            "name" : "rsp_param_vector_float",
+            "type" : "vector_float"
         }
     ]
 }

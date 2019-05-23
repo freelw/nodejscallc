@@ -2,9 +2,11 @@ const Test = require('./build/releasejscallc/test_proxy');
 const test = new Test(
     {
         init_param_long: 567,
+        init_param_float: 89.10,
         init_param_string: "",
         init_param_vector_string: ["v_init_string0", "v_init_string1", ''],
         init_param_vector_long: [654, 321],
+        init_param_vector_float: [234.3, 934.6]
     },
     {
         test_env_var: 'ok',
@@ -15,9 +17,11 @@ test.ready(() => {
     console.log('ready');
     test.do({
         param_long: 123,
+        param_float: 456.78,
         param_string: '',
         param_vector_string: ['abc', '你好', 'xxxxxxx', '123', ''],
         param_vector_long: [123, 456],
+        param_vector_float: [789.12, 482.67]
     }, (rsp) => {
         console.log('rsp :', rsp);
     });

@@ -10,6 +10,13 @@ function generate_deserialization_code(params) {
         if (read_size < 0) {
             break;
         }`;
+        } else if (type === 'float') {
+            return `
+        float ${name} = 0;
+        read_size = readed(fd0, (char *)&${name}, 4);
+        if (read_size < 0) {
+            break;
+        }`;
         } else if (type === 'string' || type === 'buffer') {
             return `
         long len_${index} = 0;
@@ -69,6 +76,24 @@ function generate_deserialization_code(params) {
             ${name}.push_back(buffer_${index}[i]);
         }
         delete []buffer_${index};`;
+        } else if (type === 'vector_float') {
+            return `
+        long vector_cnt_${index} = 0;
+        read_size = readed(fd0, (char *)&vector_cnt_${index}, 4);
+        if (read_size < 0) {
+            break;
+        }
+        std::vector<float> ${name};
+        ${name}.reserve(vector_cnt_${index});
+        float *buffer_${index} = new float[vector_cnt_${index}];
+        read_size = readed(fd0, (char *)buffer_${index}, vector_cnt_${index}*4);
+        if (read_size < 0) {
+            break;
+        }
+        for (long i = 0; i < vector_cnt_${index}; ++ i) {
+            ${name}.push_back(buffer_${index}[i]);
+        }
+        delete []buffer_${index};`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -80,12 +105,16 @@ function generate_params_str_list(req_params, rsp_params) {
         const {name, type} = param;
         if (type === 'long') {
             return `long ${name}`;
+        } else if (type === 'float') {
+            return `float ${name}`;
         } else if (type === 'string' || type === 'buffer') {
             return `const std::string & ${name}`;
         } else if (type === 'vector_string') {
             return `const std::vector<std::string> & ${name}`;
         } else if (type === 'vector_long') {
             return `const std::vector<int> & ${name}`;
+        } else if (type === 'vector_float') {
+            return `const std::vector<float> & ${name}`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -94,12 +123,16 @@ function generate_params_str_list(req_params, rsp_params) {
         const {name, type} = param;
         if (type === 'long') {
             return `long & ${name}`;
+        } else if (type === 'float') {
+            return `float & ${name}`;
         } else if (type === 'string') {
             return `std::string & ${name}`;
         } else if (type === 'vector_string') {
             return `std::vector<std::string> & ${name}`;
         } else if (type === 'vector_long') {
             return `std::vector<int> & ${name}`;
+        } else if (type === 'vector_float') {
+            return `std::vector<float> & ${name}`;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -137,6 +170,10 @@ function generate_rsp_params_def_code(rsp_params)
             return `
         long ${name};
             `;
+        } else if (type === 'float') {
+            return `
+        float ${name};
+            `;
         } else if (type === 'string') {
             return `
         std::string ${name};
@@ -149,6 +186,10 @@ function generate_rsp_params_def_code(rsp_params)
             return `
         std::vector<int> ${name};
             `
+        } else if (type === 'vector_float') {
+            return `
+        std::vector<float> ${name};
+            `
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -160,6 +201,10 @@ function generate_rsp_code(rsp_params)
     return rsp_params.map((param, index) => {
         const {name, type} = param;
         if (type === 'long') {
+            return `
+        rsp_buffer.append((char*)&${name}, 4);
+            `;
+        } else if (type === 'float') {
             return `
         rsp_buffer.append((char*)&${name}, 4);
             `;
@@ -185,6 +230,14 @@ function generate_rsp_code(rsp_params)
         }
         `;
         } else if (type === 'vector_long') {
+            return `
+        long v_cnt_${index} = ${name}.size();
+        rsp_buffer.append((char*)&v_cnt_${index}, 4);
+        for (size_t i = 0, len = ${name}.size(); i < len; ++ i) {
+            rsp_buffer.append((char *)&${name}[i], 4);
+        }
+            `;
+        } else if (type === 'vector_float') {
             return `
         long v_cnt_${index} = ${name}.size();
         rsp_buffer.append((char*)&v_cnt_${index}, 4);

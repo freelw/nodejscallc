@@ -9,6 +9,12 @@ function generate_serialization_code(params) {
     buffer_${index}.writeInt32LE(req.${name});
     buffer = Buffer.concat([buffer, buffer_${index}]);
     `;
+        } else if (type === 'float') {
+            return `
+    const buffer_${index} = Buffer.alloc(4);
+    buffer_${index}.writeFloatLE(req.${name});
+    buffer = Buffer.concat([buffer, buffer_${index}]);
+    `;
         } else if (type === 'buffer') {
             return `
     const buffer_${index} = req.${name};
@@ -41,7 +47,7 @@ function generate_serialization_code(params) {
     len_buffer_${index}.writeInt32LE(vbuffer_${index}.byteLength);
     buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, len_buffer_${index}, vbuffer_${index}]);
     `;
-        } else if (type === 'vector_long'){
+        } else if (type === 'vector_long') {
             return `
     const vbuffer_${index} = Buffer.concat(req.${name}.map((num) => {
         const _num_buffer = Buffer.alloc(4);
@@ -51,7 +57,18 @@ function generate_serialization_code(params) {
     const len_buffer_cnt_${index} = Buffer.alloc(4);
     len_buffer_cnt_${index}.writeInt32LE(req.${name}.length);
     buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, vbuffer_${index}]);
-        `
+    `;
+        } else if (type === 'vector_float') {
+            return `
+    const vbuffer_${index} = Buffer.concat(req.${name}.map((num) => {
+        const _num_buffer = Buffer.alloc(4);
+        _num_buffer.writeFloatLE(num);
+        return _num_buffer;
+    }));
+    const len_buffer_cnt_${index} = Buffer.alloc(4);
+    len_buffer_cnt_${index}.writeInt32LE(req.${name}.length);
+    buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, vbuffer_${index}]);
+    `;
         } else {
             throw new Error(`type '${type}' not supported.`);
         }
@@ -64,6 +81,11 @@ function generate_deserialization_code(rsp_params) {
         if (type === 'long') {
             return `
                 rsp.${name} = buffer.readInt32LE();
+                buffer = buffer.slice(4);
+                `;
+        } else if (type === 'float') {
+            return `
+                rsp.${name} = buffer.readFloatLE();
                 buffer = buffer.slice(4);
                 `;
         } else if (type === 'string') {
@@ -94,6 +116,17 @@ function generate_deserialization_code(rsp_params) {
                 rsp.${name} = [];
                 for (let i = 0; i < v_cnt_${index}; ++ i) {
                     const num = buffer.readInt32LE();
+                    buffer = buffer.slice(4);
+                    rsp.${name}.push(num);
+                }
+            `;
+        } else if (type === 'vector_float') {
+            return `
+                const v_cnt_${index} = buffer.readInt32LE();
+                buffer = buffer.slice(4);
+                rsp.${name} = [];
+                for (let i = 0; i < v_cnt_${index}; ++i) {
+                    const num = buffer.readFloatLE();
                     buffer = buffer.slice(4);
                     rsp.${name}.push(num);
                 }
