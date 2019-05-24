@@ -5,46 +5,46 @@ function generate_deserialization_code(params) {
         const {name, type} = param;
         if (type === 'long') {
             return `
-        (${name},) = struct.unpack('<i', readed(4))
+        (${name},) = struct.unpack('=i', readed(4))
         `;
         } else if (type === 'float') {
             return `
-        (${name},) = struct.unpack('<f', readed(4))
+        (${name},) = struct.unpack('=f', readed(4))
         `;
         } else if (type === 'string' || type === 'buffer') {
             return `
-        (len_${index},) = struct.unpack('<i', readed(4))
+        (len_${index},) = struct.unpack('=i', readed(4))
         ${name} = readed(len_${index})
         `;
         } else if (type === 'vector_string') {
             return `
-        (vector_cnt_${index},) = struct.unpack('<i', readed(4))
-        (vector_len_${index},) = struct.unpack('<i', readed(4))
+        (vector_cnt_${index},) = struct.unpack('=i', readed(4))
+        (vector_len_${index},) = struct.unpack('=i', readed(4))
         ${name} = []
         buffer_${index} = readed(vector_len_${index})
         for i in xrange(vector_cnt_${index}):
-            (_v_len_${index},) = struct.unpack('<i', buffer_${index}[:4])
+            (_v_len_${index},) = struct.unpack('=i', buffer_${index}[:4])
             buffer_${index} = buffer_${index}[4:]
             ${name}.append(buffer_${index}[:_v_len_${index}])
             buffer_${index} = buffer_${index}[_v_len_${index}:]
         `;
         } else if (type === 'vector_long') {
             return `
-        (vector_cnt_${index},) = struct.unpack('<i', readed(4))
+        (vector_cnt_${index},) = struct.unpack('=i', readed(4))
         ${name} = []
         buffer_${index} = readed(vector_cnt_${index}*4)
         for i in xrange(vector_cnt_${index}):
-            (cnt_${index},) = struct.unpack('<i', buffer_${index}[:4])
+            (cnt_${index},) = struct.unpack('=i', buffer_${index}[:4])
             ${name}.append(cnt_${index})
             buffer_${index} = buffer_${index}[4:]
         `;
         } else if (type === 'vector_float') {
             return `
-        (vector_cnt_${index},) = struct.unpack('<i', readed(4))
+        (vector_cnt_${index},) = struct.unpack('=i', readed(4))
         ${name} = []
         buffer_${index} = readed(vector_cnt_${index}*4)
         for i in xrange(vector_cnt_${index}):
-            (cnt_${index},) = struct.unpack('<f', buffer_${index}[:4])
+            (cnt_${index},) = struct.unpack('=f', buffer_${index}[:4])
             ${name}.append(cnt_${index})
             buffer_${index} = buffer_${index}[4:]
         `;
@@ -118,45 +118,45 @@ function generate_rsp_code(rsp_params)
         const {name, type} = param;
         if (type === 'long') {
             return `
-        rsp_buffer += struct.pack('<i', ${name})
+        rsp_buffer += struct.pack('=i', ${name})
             `;
         } else if (type === 'float') {
             return `
-        rsp_buffer += struct.pack('<f', ${name})
+        rsp_buffer += struct.pack('=f', ${name})
             `;
         } else if (type === 'string') {
             return `
         str_len_${index} = len(${name})
-        rsp_buffer += struct.pack('<i', str_len_${index})
+        rsp_buffer += struct.pack('=i', str_len_${index})
         rsp_buffer += ${name}
             `;
         } else if (type === 'vector_string') {
             return `
         v_cnt_${index} = len(${name})
-        rsp_buffer += struct.pack('<i', v_cnt_${index})
+        rsp_buffer += struct.pack('=i', v_cnt_${index})
         total_len_${index} = len(${name}) * 4
         for i in xrange(len(${name})):
             total_len_${index} += len(${name}[i])
-        rsp_buffer += struct.pack('<i', total_len_${index})
+        rsp_buffer += struct.pack('=i', total_len_${index})
         
         for i in xrange(len(${name})):
             tmp_len = len(${name}[i])
-            rsp_buffer += struct.pack('<i', tmp_len)
+            rsp_buffer += struct.pack('=i', tmp_len)
             rsp_buffer += ${name}[i]
         `;
         } else if (type === 'vector_long') {
             return `
         v_cnt_${index} = len(${name})
-        rsp_buffer += struct.pack('<i', v_cnt_${index})
+        rsp_buffer += struct.pack('=i', v_cnt_${index})
         for i in xrange(len(${name})):
-            rsp_buffer += struct.pack('<i', ${name}[i])
+            rsp_buffer += struct.pack('=i', ${name}[i])
         `;
         } else if (type === 'vector_float') {
             return `
         v_cnt_${index} = len(${name})
-        rsp_buffer += struct.pack('<i', v_cnt_${index})
+        rsp_buffer += struct.pack('=i', v_cnt_${index})
         for i in xrange(len(${name})):
-            rsp_buffer += struct.pack('<f', ${name}[i])
+            rsp_buffer += struct.pack('=f', ${name}[i])
         `;
         } else {
             throw new Error(`type '${type}' not supported.`);
@@ -210,18 +210,18 @@ def dbg_log(msg):
     _type = 1
     sid = 0
     buffer_len = len(msg)
-    written(struct.pack('<i', _type))
-    written(struct.pack('<i', sid))
-    written(struct.pack('<i', buffer_len))
+    written(struct.pack('=i', _type))
+    written(struct.pack('=i', sid))
+    written(struct.pack('=i', buffer_len))
     written(msg)
 
 def ready():
     _type = 2
     sid = 0
     buffer_len = 1
-    written(struct.pack('<i', _type))
-    written(struct.pack('<i', sid))
-    written(struct.pack('<i', buffer_len))
+    written(struct.pack('=i', _type))
+    written(struct.pack('=i', sid))
+    written(struct.pack('=i', buffer_len))
     written(' ')
 
 if __name__ == '__main__':
@@ -233,7 +233,7 @@ if __name__ == '__main__':
     os.close(sys.stdout.fileno())
     initialized = False
     while True:
-        (buf_len,) = struct.unpack('<i', readed(4))
+        (buf_len,) = struct.unpack('=i', readed(4))
         ${init_deserialization_code}
         ${init_call_code}
         ready()
@@ -245,17 +245,17 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     while True:
-        (buf_len,) = struct.unpack('<i', readed(4))
-        (sid,) = struct.unpack('<i', readed(4))
+        (buf_len,) = struct.unpack('=i', readed(4))
+        (sid,) = struct.unpack('=i', readed(4))
         ${deserialization_code}
         ${call_code}
         _type = 0
-        written(struct.pack('<i', _type))
-        written(struct.pack('<i', sid))
+        written(struct.pack('=i', _type))
+        written(struct.pack('=i', sid))
         rsp_buffer = ''
         ${rsp_code}
         rsp_buffer_len = len(rsp_buffer)
-        written(struct.pack('<i', rsp_buffer_len))
+        written(struct.pack('=i', rsp_buffer_len))
         written(rsp_buffer)
 `;
     return tidy_code(code);
