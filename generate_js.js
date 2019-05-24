@@ -6,13 +6,13 @@ function generate_serialization_code(params) {
         if (type === 'long') {
             return `
     const buffer_${index} = Buffer.alloc(4);
-    buffer_${index}.writeInt32LE(req.${name});
+    buffer_${index}.writeInt32(req.${name});
     buffer = Buffer.concat([buffer, buffer_${index}]);
     `;
         } else if (type === 'float') {
             return `
     const buffer_${index} = Buffer.alloc(4);
-    buffer_${index}.writeFloatLE(req.${name});
+    buffer_${index}.writeFloat(req.${name});
     buffer = Buffer.concat([buffer, buffer_${index}]);
     `;
         } else if (type === 'buffer') {
@@ -20,7 +20,7 @@ function generate_serialization_code(params) {
     const buffer_${index} = req.${name};
     const buf_len_${index} = req.${name}.byteLength;
     const len_buffer_${index} = Buffer.alloc(4);
-    len_buffer_${index}.writeInt32LE(buf_len_${index});
+    len_buffer_${index}.writeInt32(buf_len_${index});
     buffer = Buffer.concat([buffer, len_buffer_${index}, buffer_${index}]);
     `;
         } else if (type === 'string') {
@@ -29,44 +29,44 @@ function generate_serialization_code(params) {
     buffer_${index}.write(req.${name});
     const str_len_${index} = Buffer.byteLength(buffer_${index});
     const len_buffer_${index} = Buffer.alloc(4);
-    len_buffer_${index}.writeInt32LE(str_len_${index});
+    len_buffer_${index}.writeInt32(str_len_${index});
     buffer = Buffer.concat([buffer, len_buffer_${index}, buffer_${index}]);
     `;
         } else if (type === 'vector_string'){
             return `
     const vbuffer_${index} = Buffer.concat(req.${name}.map((str) => {
         const _len_buffer = Buffer.alloc(4);
-        _len_buffer.writeInt32LE(Buffer.byteLength(str));
+        _len_buffer.writeInt32(Buffer.byteLength(str));
         const _buffer = Buffer.alloc(Buffer.byteLength(str));
         _buffer.write(str);
         return Buffer.concat([_len_buffer,_buffer]);
     }));
     const len_buffer_cnt_${index} = Buffer.alloc(4);
-    len_buffer_cnt_${index}.writeInt32LE(req.${name}.length);
+    len_buffer_cnt_${index}.writeInt32(req.${name}.length);
     const len_buffer_${index} = Buffer.alloc(4);
-    len_buffer_${index}.writeInt32LE(vbuffer_${index}.byteLength);
+    len_buffer_${index}.writeInt32(vbuffer_${index}.byteLength);
     buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, len_buffer_${index}, vbuffer_${index}]);
     `;
         } else if (type === 'vector_long') {
             return `
     const vbuffer_${index} = Buffer.concat(req.${name}.map((num) => {
         const _num_buffer = Buffer.alloc(4);
-        _num_buffer.writeInt32LE(num);
+        _num_buffer.writeInt32(num);
         return _num_buffer;
     }));
     const len_buffer_cnt_${index} = Buffer.alloc(4);
-    len_buffer_cnt_${index}.writeInt32LE(req.${name}.length);
+    len_buffer_cnt_${index}.writeInt32(req.${name}.length);
     buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, vbuffer_${index}]);
     `;
         } else if (type === 'vector_float') {
             return `
     const vbuffer_${index} = Buffer.concat(req.${name}.map((num) => {
         const _num_buffer = Buffer.alloc(4);
-        _num_buffer.writeFloatLE(num);
+        _num_buffer.writeFloat(num);
         return _num_buffer;
     }));
     const len_buffer_cnt_${index} = Buffer.alloc(4);
-    len_buffer_cnt_${index}.writeInt32LE(req.${name}.length);
+    len_buffer_cnt_${index}.writeInt32(req.${name}.length);
     buffer = Buffer.concat([buffer, len_buffer_cnt_${index}, vbuffer_${index}]);
     `;
         } else {
@@ -80,30 +80,30 @@ function generate_deserialization_code(rsp_params) {
         const {name, type} = param;
         if (type === 'long') {
             return `
-                rsp.${name} = buffer.readInt32LE();
+                rsp.${name} = buffer.readInt32();
                 buffer = buffer.slice(4);
                 `;
         } else if (type === 'float') {
             return `
-                rsp.${name} = buffer.readFloatLE();
+                rsp.${name} = buffer.readFloat();
                 buffer = buffer.slice(4);
                 `;
         } else if (type === 'string') {
             return `
-                const str_len_${index} = buffer.readInt32LE();
+                const str_len_${index} = buffer.readInt32();
                 buffer = buffer.slice(4);
                 rsp.${name} = buffer.slice(0, str_len_${index}).toString();
                 buffer = buffer.slice(str_len_${index});
                 `;
         } else if (type === 'vector_string') {
             return `
-                const v_cnt_${index} = buffer.readInt32LE();
+                const v_cnt_${index} = buffer.readInt32();
                 buffer = buffer.slice(4);
-                const buffer_len_${index} = buffer.readInt32LE();
+                const buffer_len_${index} = buffer.readInt32();
                 buffer = buffer.slice(4);
                 rsp.${name} = [];
                 for (let i = 0; i < v_cnt_${index}; ++ i) {
-                    const tmp_len = buffer.readInt32LE();
+                    const tmp_len = buffer.readInt32();
                     buffer = buffer.slice(4);
                     rsp.${name}.push(buffer.slice(0, tmp_len).toString());
                     buffer = buffer.slice(tmp_len);
@@ -111,22 +111,22 @@ function generate_deserialization_code(rsp_params) {
             `;
         } else if (type === 'vector_long') {
             return `
-                const v_cnt_${index} = buffer.readInt32LE();
+                const v_cnt_${index} = buffer.readInt32();
                 buffer = buffer.slice(4);
                 rsp.${name} = [];
                 for (let i = 0; i < v_cnt_${index}; ++ i) {
-                    const num = buffer.readInt32LE();
+                    const num = buffer.readInt32();
                     buffer = buffer.slice(4);
                     rsp.${name}.push(num);
                 }
             `;
         } else if (type === 'vector_float') {
             return `
-                const v_cnt_${index} = buffer.readInt32LE();
+                const v_cnt_${index} = buffer.readInt32();
                 buffer = buffer.slice(4);
                 rsp.${name} = [];
                 for (let i = 0; i < v_cnt_${index}; ++i) {
-                    const num = buffer.readFloatLE();
+                    const num = buffer.readFloat();
                     buffer = buffer.slice(4);
                     rsp.${name}.push(num);
                 }
@@ -150,6 +150,42 @@ function generate_js(func_name, req_params, rsp_params, init_params, desc, versi
 
 const cp = require('child_process');
 const path = require('path');
+const os = require('os');
+
+const endianess = os.endianness();
+
+Buffer.prototype.writeInt32 = function(value, offset = 0) {
+    if (endianess === 'LE') {
+        this.writeInt32LE(value, offset);
+    } else {
+        this.writeInt32BE(value, offset);
+    }
+};
+
+Buffer.prototype.readInt32 = function(offset = 0) {
+    if (endianess === 'LE') {
+        return this.readInt32LE(offset);
+    } else {
+        return this.readInt32BE(offset);
+    }
+};
+
+Buffer.prototype.writeFloat = function(value, offset = 0) {
+    if (endianess === 'LE') {
+        this.writeFloatLE(value, offset);
+    } else {
+        this.writeFloatBE(value, offset);
+    }
+};
+
+Buffer.prototype.readFloat = function(offset = 0) {
+    if (endianess === 'LE') {
+        return this.readFloatLE(offset);
+    } else {
+        return this.readFloatBE(offset);
+    }
+};
+
 function ${func_name}(init_req, init_env) {
     let cmd = '';
     if ('${lang}' === 'c') {
@@ -173,9 +209,9 @@ function ${func_name}(init_req, init_env) {
             if (this.buffer.length < 12) {
                 break;
             }
-            const type = this.buffer.readInt32LE(); 
-            const sid = this.buffer.readInt32LE(4);
-            const buffer_len = this.buffer.readInt32LE(8);
+            const type = this.buffer.readInt32(); 
+            const sid = this.buffer.readInt32(4);
+            const buffer_len = this.buffer.readInt32(8);
             if (this.buffer.length-12 < buffer_len) {
                 break;
             }
@@ -212,11 +248,11 @@ ${func_name}.prototype.do = function(req, cb) {
         cb
     };
     let buffer = Buffer.alloc(4);
-    buffer.writeInt32LE(sid);
+    buffer.writeInt32(sid);
     ${serialization_code}
     const buffer_len = buffer.length;
     const len_buffer = Buffer.alloc(4);
-    len_buffer.writeInt32LE(buffer_len);
+    len_buffer.writeInt32(buffer_len);
     this.child.stdin.write(len_buffer);
     this.child.stdin.write(buffer);
 }
@@ -240,7 +276,7 @@ ${func_name}.prototype.initialize = function(req) {
     ${init_serialization_code}
     const buffer_len = buffer.length;
     const len_buffer = Buffer.alloc(4);
-    len_buffer.writeInt32LE(buffer_len);
+    len_buffer.writeInt32(buffer_len);
     this.child.stdin.write(len_buffer);
     this.child.stdin.write(buffer);
 }
