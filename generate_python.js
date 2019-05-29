@@ -118,45 +118,45 @@ function generate_rsp_code(rsp_params)
         const {name, type} = param;
         if (type === 'long') {
             return `
-        rsp_buffer += struct.pack('=i', ${name})
+            rsp_buffer += struct.pack('=i', ${name})
             `;
         } else if (type === 'float') {
             return `
-        rsp_buffer += struct.pack('=f', ${name})
+            rsp_buffer += struct.pack('=f', ${name})
             `;
         } else if (type === 'string') {
             return `
-        str_len_${index} = len(${name})
-        rsp_buffer += struct.pack('=i', str_len_${index})
-        rsp_buffer += ${name}
+            str_len_${index} = len(${name})
+            rsp_buffer += struct.pack('=i', str_len_${index})
+            rsp_buffer += ${name}
             `;
         } else if (type === 'vector_string') {
             return `
-        v_cnt_${index} = len(${name})
-        rsp_buffer += struct.pack('=i', v_cnt_${index})
-        total_len_${index} = len(${name}) * 4
-        for i in xrange(len(${name})):
-            total_len_${index} += len(${name}[i])
-        rsp_buffer += struct.pack('=i', total_len_${index})
-        
-        for i in xrange(len(${name})):
-            tmp_len = len(${name}[i])
-            rsp_buffer += struct.pack('=i', tmp_len)
-            rsp_buffer += ${name}[i]
+            v_cnt_${index} = len(${name})
+            rsp_buffer += struct.pack('=i', v_cnt_${index})
+            total_len_${index} = len(${name}) * 4
+            for i in xrange(len(${name})):
+                total_len_${index} += len(${name}[i])
+            rsp_buffer += struct.pack('=i', total_len_${index})
+            
+            for i in xrange(len(${name})):
+                tmp_len = len(${name}[i])
+                rsp_buffer += struct.pack('=i', tmp_len)
+                rsp_buffer += ${name}[i]
         `;
         } else if (type === 'vector_long') {
             return `
-        v_cnt_${index} = len(${name})
-        rsp_buffer += struct.pack('=i', v_cnt_${index})
-        for i in xrange(len(${name})):
-            rsp_buffer += struct.pack('=i', ${name}[i])
+            v_cnt_${index} = len(${name})
+            rsp_buffer += struct.pack('=i', v_cnt_${index})
+            for i in xrange(len(${name})):
+                rsp_buffer += struct.pack('=i', ${name}[i])
         `;
         } else if (type === 'vector_float') {
             return `
-        v_cnt_${index} = len(${name})
-        rsp_buffer += struct.pack('=i', v_cnt_${index})
-        for i in xrange(len(${name})):
-            rsp_buffer += struct.pack('=f', ${name}[i])
+            v_cnt_${index} = len(${name})
+            rsp_buffer += struct.pack('=i', v_cnt_${index})
+            for i in xrange(len(${name})):
+                rsp_buffer += struct.pack('=f', ${name}[i])
         `;
         } else {
             throw new Error(`type '${type}' not supported.`);
@@ -168,15 +168,76 @@ function generate_initialization_args(init_params) {
     return generate_params_str_list(init_params, []);
 }
 
-function generate_python(func_name, req_params, rsp_params, init_params, desc, version)
-{
-    const deserialization_code = generate_deserialization_code(req_params);
-    const def_code = generate_def_code(func_name, req_params, rsp_params);
-    const call_code = generate_call_code(func_name, req_params, rsp_params);
-    const rsp_code = generate_rsp_code(rsp_params);
+function generate_all_def_code(func_map) {
+    return Object.keys(func_map).map((func_name) => {
+        const {
+            def_code,
+        } = func_map[func_name];
+        return `
+${def_code}
+        `;
+    }).join('\n');
+}
+
+function add_tab(code) {
+    return code.split('\n').map((line) => {
+        return `    ${line}`;
+    }).join('\n');
+}
+
+function generate_all_deserialization_code(func_map) {
+    return Object.keys(func_map).map((func_name) => {
+        const {
+            deserialization_code,
+            call_code,
+            rsp_code,
+        } = func_map[func_name];
+
+        return `
+        if func_name == "${func_name}":
+${add_tab(deserialization_code)}
+            ${call_code}
+            _type = 0
+            written(struct.pack('=i', _type))
+            written(struct.pack('=i', sid))
+            rsp_buffer = ''
+            func_name_len = len(func_name)
+            rsp_buffer += struct.pack('=i', func_name_len)
+            rsp_buffer += func_name
+${rsp_code}
+            rsp_buffer_len = len(rsp_buffer)
+            written(struct.pack('=i', rsp_buffer_len))
+            written(rsp_buffer)
+        `
+    }).join('\n');
+}
+
+function generate_python(class_name, init_params, funcs, desc, version) {
     const initialization_args = generate_initialization_args(init_params);
     const init_deserialization_code = generate_deserialization_code(init_params);
     const init_call_code = generate_call_code("initialize", init_params, []);
+    const func_map = funcs.reduce((pre, func) => {
+        const {
+            name: func_name,
+            req_params,
+            rsp_params,
+        } = func;
+        pre[func_name] = {
+            deserialization_code: generate_deserialization_code(req_params),
+            def_code: generate_def_code(func_name, req_params, rsp_params),
+            call_code: generate_call_code(func_name, req_params, rsp_params),
+            rsp_code: generate_rsp_code(rsp_params),
+        }
+        return pre;
+    }, {});
+
+    /*const deserialization_code = generate_deserialization_code(req_params);
+    const def_code = generate_def_code(func_name, req_params, rsp_params);
+    const call_code = generate_call_code(func_name, req_params, rsp_params);
+    const rsp_code = generate_rsp_code(rsp_params);*/
+    const all_def_code = generate_all_def_code(func_map);
+    const all_deserialization_code = generate_all_deserialization_code(func_map);
+
     const code = `#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # **********************************************************************
@@ -191,7 +252,7 @@ import struct
 
 def initialize(${initialization_args}):
     return []
-${def_code}
+${all_def_code}
 
 def readed(length):
     ret_buffer = ''
@@ -247,18 +308,11 @@ if __name__ == '__main__':
     while True:
         (buf_len,) = struct.unpack('=i', readed(4))
         (sid,) = struct.unpack('=i', readed(4))
-        ${deserialization_code}
-        ${call_code}
-        _type = 0
-        written(struct.pack('=i', _type))
-        written(struct.pack('=i', sid))
-        rsp_buffer = ''
-        ${rsp_code}
-        rsp_buffer_len = len(rsp_buffer)
-        written(struct.pack('=i', rsp_buffer_len))
-        written(rsp_buffer)
+        (len_func_name,) = struct.unpack('=i', readed(4))
+        func_name = readed(len_func_name)
+        ${all_deserialization_code}
 `;
-    return tidy_code(code);
+    return tidy_code(code, true);
 }
 
 module.exports = generate_python;

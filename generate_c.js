@@ -278,7 +278,6 @@ ${def_code_without_body};
 }
 
 function generate_all_deserialization_code(func_map) {
-
     return Object.keys(func_map).map((func_name) => {
         const {
             deserialization_code,
@@ -286,7 +285,6 @@ function generate_all_deserialization_code(func_map) {
             rsp_params_def_code,
             rsp_code,
         } = func_map[func_name];
-
         return `
             if (func_name == "${func_name}") {
                 ${deserialization_code}
@@ -461,7 +459,6 @@ int main()
         if (read_size <= 0) {
             break;
         }
-
         long len_func_name = 0;
         read_size = readed(fd0, (char *)&len_func_name, 4);
         if (read_size < 0) {
