@@ -36,7 +36,7 @@ async function mkdir(dir) {
     });
 }
 
-const version = '0.0.11';
+const version = '0.0.96';
 
 async function main() {
     program
@@ -54,30 +54,41 @@ async function main() {
     await mkdir('./build/releasejscallpython/');
     const description = JSON.parse(content);
     const {
-        func_name,
+        class_name,
+        init_params,
+        funcs,
+        /*func_name,
         req_params,
         rsp_params,
-        init_params,
+        init_params,*/
     } = description;
 
-    const js_c_code = generate_js(func_name, req_params, rsp_params, init_params, desc, version, 'c');
-    const js_python_code = generate_js(func_name, req_params, rsp_params, init_params, desc, version, 'python');
-    const {
-        c_imp_code,
-        c_init_code,
-        c_header_code,
-        c_pipe_code,
-     } = generate_c(func_name, req_params, rsp_params, init_params, desc, version);
-    const python_code = generate_python(func_name, req_params, rsp_params, init_params, desc, version);
-    const makefile_code = generate_makefile(func_name);
-    await writeFile(`./build/jscallc/${func_name}_proxy.js`, js_c_code);
-    await writeFile(`./build/c/${func_name}_imp.cpp`, c_imp_code);
-    await writeFile(`./build/c/${func_name}_init.cpp`, c_init_code);
-    await writeFile(`./build/c/${func_name}_header.h`, c_header_code);
-    await writeFile(`./build/c/${func_name}_pipe.cpp`, c_pipe_code);
-    await writeFile(`./build/jscallpython/${func_name}_proxy.js`, js_python_code);
-    await writeFile(`./build/python/${func_name}_imp.py`, python_code);
-    await writeFile(`./build/c/makefile`, makefile_code);
+    try {
+        //const js_c_code = generate_js(func_name, req_params, rsp_params, init_params, desc, version, 'c');
+        const js_c_code = generate_js(class_name, init_params, funcs, desc, version, 'c');
+        const js_python_code = generate_js(class_name, init_params, funcs, desc, version, 'python');
+        
+        const {
+            c_imp_code,
+            c_init_code,
+            c_header_code,
+            c_pipe_code,
+        } = generate_c(class_name, init_params, funcs, desc, version);
+        /*
+        const python_code = generate_python(class_name, req_params, rsp_params, init_params, desc, version);
+        */
+        const makefile_code = generate_makefile(class_name);
+        await writeFile(`./build/jscallc/${class_name}_proxy.js`, js_c_code);
+        await writeFile(`./build/c/${class_name}_imp.cpp`, c_imp_code);
+        await writeFile(`./build/c/${class_name}_init.cpp`, c_init_code);
+        await writeFile(`./build/c/${class_name}_header.h`, c_header_code);
+        await writeFile(`./build/c/${class_name}_pipe.cpp`, c_pipe_code);
+        /*await writeFile(`./build/jscallpython/${class_name}_proxy.js`, js_python_code);
+        await writeFile(`./build/python/${class_name}_imp.py`, python_code);*/
+        await writeFile(`./build/c/makefile`, makefile_code);
+    } catch (e) {
+        console.trace(e);
+    }
 }
 
 main();

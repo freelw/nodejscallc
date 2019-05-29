@@ -1,5 +1,5 @@
 {
-    "func_name" : "test",
+    "class_name": "Tester",
     "init_params" : [
         {
             "name" : "init_param_long",
@@ -26,56 +26,66 @@
             "type" : "vector_float"
         }
     ],
-    "req_params" : [
+    "funcs" : [
         {
-            "name" : "param_long",
-            "type" : "long"
+            "name": "test",
+            "req_params" : [
+                {
+                    "name" : "param_long",
+                    "type" : "long"
+                },
+                {
+                    "name" : "param_float",
+                    "type" : "float"
+                },
+                {
+                    "name" : "param_string",
+                    "type" : "string"
+                },
+                {
+                    "name" : "param_vector_string",
+                    "type" : "vector_string"
+                },
+                {
+                    "name" : "param_vector_long",
+                    "type" : "vector_long"
+                },
+                {
+                    "name" : "param_vector_float",
+                    "type" : "vector_float"
+                }
+            ],
+            "rsp_params" : [
+                {
+                    "name" : "rsp_param_string",
+                    "type" : "string"
+                },
+                {
+                    "name" : "rsp_param_long",
+                    "type" : "long"
+                },
+                {
+                    "name" : "rsp_param_float",
+                    "type" : "float"
+                },
+                {
+                    "name" : "rsp_param_vector_string",
+                    "type" : "vector_string"
+                },
+                {
+                    "name" : "rsp_param_vector_long",
+                    "type" : "vector_long"
+                },
+                {
+                    "name" : "rsp_param_vector_float",
+                    "type" : "vector_float"
+                }
+            ]
         },
         {
-            "name" : "param_float",
-            "type" : "float"
-        },
-        {
-            "name" : "param_string",
-            "type" : "string"
-        },
-        {
-            "name" : "param_vector_string",
-            "type" : "vector_string"
-        },
-        {
-            "name" : "param_vector_long",
-            "type" : "vector_long"
-        },
-        {
-            "name" : "param_vector_float",
-            "type" : "vector_float"
-        }
-    ],
-    "rsp_params" : [
-        {
-            "name" : "rsp_param_string",
-            "type" : "string"
-        },
-        {
-            "name" : "rsp_param_long",
-            "type" : "long"
-        },
-        {
-            "name" : "rsp_param_float",
-            "type" : "float"
-        },
-        {
-            "name" : "rsp_param_vector_string",
-            "type" : "vector_string"
-        },
-        {
-            "name" : "rsp_param_vector_long",
-            "type" : "vector_long"
-        },
-        {
-            "name" : "rsp_param_vector_float",
-            "type" : "vector_float"
+            "name": "test1",
+            "req_params" : [],
+            "rsp_params": []
         }
     ]
 }

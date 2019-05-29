@@ -1,5 +1,5 @@
-const Test = require('./build/releasejscallc/test_proxy');
-const test = new Test(
+const Tester = require('./build/releasejscallc/Tester_proxy');
+const tester = new Tester(
     {
         init_param_long: 567,
         init_param_float: 89.10,
@@ -13,9 +13,9 @@ const test = new Test(
     },
 );
 console.log('start');
-test.ready(() => {
+tester.ready(() => {
     console.log('ready');
-    test.do({
+    tester.test({
         param_long: 123,
         param_float: 456.78,
         param_string: '',
