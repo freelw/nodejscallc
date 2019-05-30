@@ -62,7 +62,6 @@ async function main() {
     try {
         const js_c_code = generate_js(class_name, init_params, funcs, desc, version, 'c');
         const js_python_code = generate_js(class_name, init_params, funcs, desc, version, 'python');
-        
         const {
             c_imp_code,
             c_init_code,

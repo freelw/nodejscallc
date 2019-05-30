@@ -1,4 +1,4 @@
-const tidy_code = require('./tidy_code');
+const tidy_code = require('./tidy_code').tidy_python;
 
 function generate_deserialization_code(params) {
     return params.map((param, index) => {
@@ -312,7 +312,7 @@ if __name__ == '__main__':
         func_name = readed(len_func_name)
         ${all_deserialization_code}
 `;
-    return tidy_code(code, true);
+    return tidy_code(code);
 }
 
 module.exports = generate_python;

@@ -1,4 +1,4 @@
-const tidy_code = require('./tidy_code');
+const tidy_code = require('./tidy_code').tidy_js;
 
 function generate_serialization_code(params) {
     return params.map((param, index) => {

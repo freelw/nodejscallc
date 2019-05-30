@@ -18,6 +18,7 @@
   "homepage": "https://github.com/freelw/nodejscallc#readme",
   "dependencies": {
     "commander": "^2.15.1",
+    "js-beautify": "^1.10.0",
     "mkdirp": "^0.5.1"
   }
 }

@@ -1,4 +1,4 @@
-const tidy_code = require('./tidy_code');
+const tidy_code = require('./tidy_code').tidy_c;
 
 function generate_deserialization_code(params) {
     return params.map((param, index) => {
