@@ -71,7 +71,7 @@ function generate_return_rsp_params_code(rsp_params) {
         } else if (type === 'float') {
             return `
     ${name} = 0.`;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `
     ${name} = ''`;
         } else if (type === 'vector_string') {
@@ -124,7 +124,7 @@ function generate_rsp_code(rsp_params)
             return `
             rsp_buffer += struct.pack('=f', ${name})
             `;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `
             str_len_${index} = len(${name})
             rsp_buffer += struct.pack('=i', str_len_${index})

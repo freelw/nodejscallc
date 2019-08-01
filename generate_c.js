@@ -125,7 +125,7 @@ function generate_params_str_list(req_params, rsp_params) {
             return `long & ${name}`;
         } else if (type === 'float') {
             return `float & ${name}`;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `std::string & ${name}`;
         } else if (type === 'vector_string') {
             return `std::vector<std::string> & ${name}`;
@@ -174,7 +174,7 @@ function generate_rsp_params_def_code(rsp_params)
             return `
         float ${name};
             `;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `
         std::string ${name};
             `;
@@ -208,7 +208,7 @@ function generate_rsp_code(rsp_params)
             return `
         rsp_buffer.append((char*)&${name}, 4);
             `;
-        } else if (type === 'string') {
+        } else if (type === 'string' || type === 'buffer') {
             return `
         long str_len_${index} = ${name}.length();
         rsp_buffer.append((char*)&str_len_${index}, 4);

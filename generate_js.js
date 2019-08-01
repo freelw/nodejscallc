@@ -95,6 +95,13 @@ function generate_deserialization_code(rsp_params) {
                 rsp.${name} = buffer.slice(0, str_len_${index}).toString();
                 buffer = buffer.slice(str_len_${index});
                 `;
+        } else if (type === 'buffer') {
+            return `
+                const buffer_len_${index} = buffer.readInt32();
+                buffer = buffer.slice(4);
+                rsp.${name} = buffer.slice(0, buffer_len_${index});
+                buffer = buffer.slice(buffer_len_${index});
+                `;
         } else if (type === 'vector_string') {
             return `
                 const v_cnt_${index} = buffer.readInt32();
