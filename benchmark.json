@@ -1,0 +1,22 @@
+{
+    "class_name": "BenchMark",
+    "init_params" : [
+    ],
+    "funcs" : [
+        {
+            "name": "call",
+            "req_params" : [
+                {
+                    "name" : "param_buffer",
+                    "type" : "buffer"
+                }
+            ],
+            "rsp_params" : [
+                {
+                    "name" : "rsp_param_buffer",
+                    "type" : "buffer"
+                }
+            ]
+        }
+    ]
+}
