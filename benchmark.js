@@ -24,6 +24,6 @@ b.ready(async () => {
     const cost = end-start;
     console.log(`block_size: ${block_size}`);
     console.log(`cost: ${cost} ms`);
-    console.log(`band with: ${block_size*L/cost/1000} byte/s`);
+    console.log(`band with: ${block_size*L/(cost/1000)} byte/s`);
     console.log(`latency: ${cost/L} ms`);
 });
