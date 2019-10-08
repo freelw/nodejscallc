@@ -213,3 +213,98 @@
             rsp_param_vector_float: [],
             rsp_param_buffer: <Buffer > }
             [func test1]rsp : {}
+
+## benchmark
+
+* cpuinfo (aws 单核)
+
+        $ cat /proc/cpuinfo
+        processor       : 0
+        vendor_id       : GenuineIntel
+        cpu family      : 6
+        model           : 63
+        model name      : Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz
+        stepping        : 2
+        microcode       : 0x43
+        cpu MHz         : 2400.064
+        cache size      : 30720 KB
+        physical id     : 0
+        siblings        : 1
+        core id         : 0
+        cpu cores       : 1
+        apicid          : 0
+        initial apicid  : 0
+        fpu             : yes
+        fpu_exception   : yes
+        cpuid level     : 13
+        wp              : yes
+        flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology cpuid pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm cpuid_fault invpcid_single pti fsgsbase bmi1 avx2 smep bmi2 erms invpcid xsaveopt
+        bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs
+        bogomips        : 4800.14
+        clflush size    : 64
+        cache_alignment : 64
+        address sizes   : 46 bits physical, 48 bits virtual
+        power management:
+
+* 接口描述文件 benchmark.json
+
+        {
+            "class_name": "BenchMark",
+            "init_params" : [
+            ],
+            "funcs" : [
+                {
+                    "name": "call",
+                    "req_params" : [
+                        {
+                            "name" : "param_buffer",
+                            "type" : "buffer"
+                        }
+                    ],
+                    "rsp_params" : [
+                        {
+                            "name" : "rsp_param_buffer",
+                            "type" : "buffer"
+                        }
+                    ]
+                }
+            ]
+        }
+
+* c++测试代码
+
+        void call(const std::string & param_buffer, std::string & rsp_param_buffer)
+        {
+            // TODO:
+            rsp_param_buffer = param_buffer;
+        }
+
+* 测试node调用c++
+
+        $ node benchmark.js
+        start
+        ready
+        loop times 200000
+        block_size: 1024 byte
+        cost: 13206 ms
+        band width: 15508102.377707103 byte/s
+        latency: 0.06603 ms
+
+* python测试代码
+
+        def call(param_buffer):
+            # TODO:
+            rsp_param_buffer = param_buffer
+            return [rsp_param_buffer]
+
+* 测试node调用python
+
+        $ node benchmarkpython.js
+        start
+        ready
+        loop times 200000
+        block_size: 1024 byte
+        cost: 17037 ms
+        band width: 12020895.697599344 byte/s
+        latency: 0.085185 ms
+
