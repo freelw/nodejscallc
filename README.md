@@ -3,13 +3,14 @@
 这是一个用于快速生成管道通讯序列化反序列化脚手架的工程
 目前支持node调用c/c++ node调用python的模版代码生成
 
-参数传递支持四种类型
+## 参数传递支持四种类型
 1. long 32位整形
 2. string 字符串
 3. vector_long 整形数组
 4. vector_string 字符串数组
+5. buffer 二进制序列
 
-接口定义文件为json格式
+## 接口定义文件为json格式
 ***
     {
         "class_name": "Tester", //在c或者python中要实现的类名称
@@ -103,5 +104,9 @@
         ]
     }
 ***
+
+## 使用方法
+1. npm i
+2. node init.js -i desc.json (desc.json为接口描述文件)
 
 ![image](https://github.com/freelw/nodejscallc/blob/master/gif/show.gif)

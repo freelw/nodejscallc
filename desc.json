@@ -53,6 +53,10 @@
                 {
                     "name" : "param_vector_float",
                     "type" : "vector_float"
+                },
+                {
+                    "name" : "param_buffer",
+                    "type" : "buffer"
                 }
             ],
             "rsp_params" : [
@@ -79,6 +83,10 @@
                 {
                     "name" : "rsp_param_vector_float",
                     "type" : "vector_float"
+                },
+                {
+                    "name" : "rsp_param_buffer",
+                    "type" : "buffer"
                 }
             ]
         },
