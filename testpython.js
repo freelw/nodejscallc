@@ -23,10 +23,10 @@ tester.ready(() => {
         param_vector_long: [123, 456],
         param_vector_float: [789.12, 482.67]
     }, (rsp) => {
-        console.log('rsp :', rsp);
+        console.log('[func test]rsp :', rsp);
     });
     tester.test1({}, (rsp) => {
-        console.log('test1 done.')
+        console.log('[func test1]rsp :', rsp);
     })
 });
 
