@@ -145,69 +145,71 @@
     * 进入 build/c/
     * 实现 ${类名}_init.cpp 中的init方法以获得初始化时机控制权
 
-        void initialize(long init_param_long, float init_param_float, const std::string & init_param_string, const std::vector<std::string> & init_param_vector_string, const std::vector<int> & init_param_vector_long, const std::vector<float> & init_param_vector_float)
-        {
-            // TODO initialize
-        }
+            void initialize(long init_param_long, float init_param_float, const std::string & init_param_string, const std::vector<std::string> & init_param_vector_string, const std::vector<int> & init_param_vector_long, const std::vector<float> & init_param_vector_float)
+            {
+                // TODO initialize
+            }
 
     * 实现 ${类名}_imp.cpp 中定义的函数
 
-        void test(long param_long, float param_float, const std::string & param_string, const std::vector<std::string> & param_vector_string, const std::vector<int> & param_vector_long, const std::vector<float> & param_vector_float, const std::string & param_buffer, std::string & rsp_param_string, long & rsp_param_long, float & rsp_param_float, std::vector<std::string> & rsp_param_vector_string, std::vector<int> & rsp_param_vector_long, std::vector<float> & rsp_param_vector_float, std::string & rsp_param_buffer)
-        {
-            // TODO:
-        }
-        void test1()
-        {
-            // TODO:
-        }
+            void test(long param_long, float param_float, const std::string & param_string, const std::vector<std::string> & param_vector_string, const std::vector<int> & param_vector_long, const std::vector<float> & param_vector_float, const std::string & param_buffer, std::string & rsp_param_string, long & rsp_param_long, float & rsp_param_float, std::vector<std::string> & rsp_param_vector_string, std::vector<int> & rsp_param_vector_long, std::vector<float> & rsp_param_vector_float, std::string & rsp_param_buffer)
+            {
+                // TODO:
+            }
+            void test1()
+            {
+                // TODO:
+            }
     
     * make 编译
     * 使用`node test.js`测试
 
-        ~/nodejscallc$ node test.js
-        start
-        ready
-        [func test]rsp : { rsp_param_string: '',
-        rsp_param_long: 0,
-        rsp_param_float: 5.605193857299268e-45,
-        rsp_param_vector_string: [],
-        rsp_param_vector_long: [],
-        rsp_param_vector_float: [],
-        rsp_param_buffer: <Buffer > }
-        [func test1]rsp : {}
+            ~/nodejscallc$ node test.js
+            start
+            ready
+            [func test]rsp : { rsp_param_string: '',
+            rsp_param_long: 0,
+            rsp_param_float: 5.605193857299268e-45,
+            rsp_param_vector_string: [],
+            rsp_param_vector_long: [],
+            rsp_param_vector_float: [],
+            rsp_param_buffer: <Buffer > }
+            [func test1]rsp : {}
 
 4. 调用python的方法
     * 进入 build/python
     * 实现 ${类名}_imp.py 中的initialize方法以获得初始化时机控制权
 
-        def initialize(init_param_long, init_param_float, init_param_string, init_param_vector_string, init_param_vector_long, init_param_vector_float):
-            return []
+            def initialize(init_param_long, init_param_float, init_param_string, init_param_vector_string, init_param_vector_long, init_param_vector_float):
+                return []
+
     * 实现 ${类名}_imp.py 中定义的函数
 
-        def test(param_long, param_float, param_string, param_vector_string, param_vector_long, param_vector_float, param_buffer):
-            # TODO:
-            rsp_param_string = ''
-            rsp_param_long = 0
-            rsp_param_float = 0.
-            rsp_param_vector_string = []
-            rsp_param_vector_long = []
-            rsp_param_vector_float = []
-            rsp_param_buffer = ''
-            return [rsp_param_string, rsp_param_long, rsp_param_float, rsp_param_vector_string, rsp_param_vector_long, rsp_param_vector_float, rsp_param_buffer]
-        def test1():
-            # TODO:
-            return []
+            def test(param_long, param_float, param_string, param_vector_string, param_vector_long, param_vector_float, param_buffer):
+                # TODO:
+                rsp_param_string = ''
+                rsp_param_long = 0
+                rsp_param_float = 0.
+                rsp_param_vector_string = []
+                rsp_param_vector_long = []
+                rsp_param_vector_float = []
+                rsp_param_buffer = ''
+                return [rsp_param_string, rsp_param_long, rsp_param_float, rsp_param_vector_string, rsp_param_vector_long, rsp_param_vector_float, rsp_param_buffer]
+            def test1():
+                # TODO:
+                return []
+
     * 进入 build/c/ `make`
     * 使用`node testpython.js`测试
 
-        ~/nodejscallc$ node testpython.js
-        start
-        ready
-        [func test]rsp : { rsp_param_string: '',
-        rsp_param_long: 0,
-        rsp_param_float: 0,
-        rsp_param_vector_string: [],
-        rsp_param_vector_long: [],
-        rsp_param_vector_float: [],
-        rsp_param_buffer: <Buffer > }
-        [func test1]rsp : {}
+            ~/nodejscallc$ node testpython.js
+            start
+            ready
+            [func test]rsp : { rsp_param_string: '',
+            rsp_param_long: 0,
+            rsp_param_float: 0,
+            rsp_param_vector_string: [],
+            rsp_param_vector_long: [],
+            rsp_param_vector_float: [],
+            rsp_param_buffer: <Buffer > }
+            [func test1]rsp : {}
