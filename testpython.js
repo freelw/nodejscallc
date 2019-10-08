@@ -21,7 +21,8 @@ tester.ready(() => {
         param_string: '',
         param_vector_string: ['abc', '你好', 'xxxxxxx', '123', ''],
         param_vector_long: [123, 456],
-        param_vector_float: [789.12, 482.67]
+        param_vector_float: [789.12, 482.67],
+        param_buffer: Buffer.alloc(0),
     }, (rsp) => {
         console.log('[func test]rsp :', rsp);
     });
