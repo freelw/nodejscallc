@@ -1,4 +1,4 @@
-const BenchMark = require('./build/releasejscallc/BenchMark_proxy');
+const BenchMark = require('./build/releasejscallpython/BenchMark_proxy');
 const b = new BenchMark({}, {},);
 console.log('start');
 
