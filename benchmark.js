@@ -14,7 +14,7 @@ b.ready(async () => {
     console.log('ready');
     const block1024 = Buffer.alloc(1024);
     const start = Date.now();
-    for (let i = 0; i < 20000; ++ i) {
+    for (let i = 0; i < 200000; ++ i) {
         await bm(block1024);
     }
     const end = Date.now();
