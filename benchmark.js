@@ -10,7 +10,7 @@ async function bm(block) {
     });
 }
 
-tester.ready(async () => {
+b.ready(async () => {
     console.log('ready');
     const block1024 = Buffer.alloc(1024);
     const start = Date.now();
