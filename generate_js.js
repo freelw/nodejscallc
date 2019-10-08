@@ -291,7 +291,6 @@ function ${class_name}(init_req, init_env) {
                 const str_len_func_name = buffer.readInt32();
                 buffer = buffer.slice(4);
                 const func_name = buffer.slice(0, str_len_func_name).toString();
-                console.log('func_name : ', func_name);
                 buffer = buffer.slice(str_len_func_name);
                 ${dispatch_code}
                 const key = sid+func_name;
