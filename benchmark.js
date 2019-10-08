@@ -10,13 +10,20 @@ async function bm(block) {
     });
 }
 
+const L = 200000;
+const block_size = 1024;
+
 b.ready(async () => {
     console.log('ready');
-    const block1024 = Buffer.alloc(1024);
+    const block = Buffer.alloc(block_size);
     const start = Date.now();
-    for (let i = 0; i < 200000; ++ i) {
-        await bm(block1024);
+    for (let i = 0; i < L; ++ i) {
+        await bm(block);
     }
     const end = Date.now();
-    console.log('cost : ', end-start);
+    const cost = end-start;
+    console.log(`block_size: ${block_size}`);
+    console.log(`cost: ${cost} ms`);
+    console.log(`band with: ${block_size*L/cost/1000} byte/s`);
+    console.log(`latency: ${cost/L} ms`);
 });
