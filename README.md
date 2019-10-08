@@ -67,6 +67,10 @@
                     {
                         "name" : "param_vector_float",
                         "type" : "vector_float"
+                    },
+                    {
+                        "name" : "param_buffer",
+                        "type" : "buffer"
                     }
                 ],
                 "rsp_params" : [    //函数返回参数
@@ -93,6 +97,10 @@
                     {
                         "name" : "rsp_param_vector_float",
                         "type" : "vector_float"
+                    },
+                    {
+                        "name" : "rsp_param_buffer",
+                        "type" : "buffer"
                     }
                 ]
             },
@@ -108,5 +116,30 @@
 ## 使用方法
 1. npm i
 2. node init.js -i desc.json (desc.json为接口描述文件)
+    * 生成的目录结构如下
+        ***
+            ~/nodejscallc$ tree build/
+            build/
+            ├── c
+            │   ├── Tester_header.h
+            │   ├── Tester_imp.cpp
+            │   ├── Tester_init.cpp
+            │   ├── Tester_pipe.cpp
+            │   └── makefile
+            ├── jscallc
+            │   └── Tester_proxy.js
+            ├── jscallpython
+            │   └── Tester_proxy.js
+            ├── python
+            │   └── Tester_imp.py
+            ├── releasejscallc
+            │   ├── Tester
+            │   └── Tester_proxy.js
+            └── releasejscallpython
+                ├── Tester_imp.py
+                └── Tester_proxy.js
+
+            6 directories, 12 files
+        ***
 
 ![image](https://github.com/freelw/nodejscallc/blob/master/gif/show.gif)
