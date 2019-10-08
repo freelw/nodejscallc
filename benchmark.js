@@ -22,6 +22,7 @@ b.ready(async () => {
     }
     const end = Date.now();
     const cost = end-start;
+    console.log(`loop times ${L}`);
     console.log(`block_size: ${block_size} byte`);
     console.log(`cost: ${cost} ms`);
     console.log(`band with: ${block_size*L/(cost/1000)} byte/s`);
