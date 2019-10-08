@@ -4,7 +4,7 @@ console.log('start');
 
 async function bm(block) {
     return new Promise((resolve) => {
-        b.test({
+        b.call({
             param_buffer: block
         }, resolve);
     });
