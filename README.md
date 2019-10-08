@@ -117,7 +117,6 @@
 1. npm i
 2. node init.js -i desc.json (desc.json为接口描述文件)
     * 生成的目录结构如下
-        ***
             ~/nodejscallc$ tree build/
             build/
             ├── c
@@ -140,6 +139,5 @@
                 └── Tester_proxy.js
 
             6 directories, 12 files
-        ***
 
 ![image](https://github.com/freelw/nodejscallc/blob/master/gif/show.gif)
